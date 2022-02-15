@@ -8,6 +8,7 @@ import requests
 
 def ch_get_df(query='Select 1', host='https://clickhouse.lab.karpov.courses', user='student', password='dpo_python_2020'):
     r = requests.post(host, data=query.encode("utf-8"), auth=(user, password), verify=False)
+    print(r.text)
     result = pd.read_csv(StringIO(r.text))
     return result
 
