@@ -8,7 +8,6 @@ import requests
 
 def ch_get_df(query='Select 1', host='https://clickhouse.lab.karpov.courses', user='student', password='dpo_python_2020'):
     r = requests.post(host, data=query.encode("utf-8"), auth=(user, password), verify=False)
-    print(r.text)
     result = pd.read_csv(StringIO(r.text))
     return result
 
@@ -37,7 +36,7 @@ schedule_interval = '0 23 * * *'
 def dag_test():
     @task()
     def task_test():
-        query = 'SELECT * FROM simulator.feed_actions where toDate(time) = today() limit 10'
+        query = """SELECT * FROM simulator.feed_actions where toDate(time) = '2022-01-26' limit 10"""
         df = ch_get_df(query)
         print(df.head())
 
