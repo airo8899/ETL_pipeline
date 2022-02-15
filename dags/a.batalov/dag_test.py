@@ -1,8 +1,15 @@
 from datetime import datetime, timedelta
 from airflow.decorators import dag, task
+import pandas as pd
+from io import StringIO
 #from airflow.operators.python import get_current_context
-import pandahouse
+import requests
 
+
+def ch_get_df(query='Select 1', host='https://clickhouse.lab.karpov.courses', user='student', password='dpo_python_2020'):
+    r = requests.post(host, data=query.encode("utf-8"), auth=(user, password), verify=False)
+    result = pd.read_csv(StringIO(r.text))
+    return result
 
 
 default_args = {
@@ -29,17 +36,8 @@ schedule_interval = '0 23 * * *'
 def dag_test():
     @task()
     def task_test():
-        connection = {
-            'host': 'https://clickhouse.lab.karpov.courses',
-            'password': 'dpo_python_2020',
-            'user': 'student',
-            'database': 'simulator'
-        }
-
-        q = 'SELECT * FROM {db}.feed_actions where toDate(time) = today() limit 10'
-
-        df = pandahouse.read_clickhouse(q, connection=connection)
-
+        query = 'SELECT * FROM simulator.feed_actions where toDate(time) = today() limit 10'
+        df = ch_get_df(query)
         print(df.head())
 
     task_test()
