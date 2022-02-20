@@ -62,7 +62,7 @@ def dag_simulator():
     def transform_countries(df_cube):
         countries = df_cube[['event_date', 'country', 'user_id']]\
                             .groupby(['event_date', 'country'])\
-                            .nuinque()\
+                            .nunique()\
                             .reset_index()\
                             .sort('user_id', ascending=False)\
                             .head(10)
@@ -72,7 +72,7 @@ def dag_simulator():
     def transform_sources(df_cube):
         sources = df_cube[['event_date', 'country', 'source']]\
                           .groupby(['event_date', 'source'])\
-                          .nuinque()\
+                          .nunique()\
                           .reset_index()\
                           .sort('user_id', ascending=False)\
                           .head(10)
