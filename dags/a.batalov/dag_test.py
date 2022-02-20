@@ -47,7 +47,7 @@ def dag_simulator():
                        user_id, 
                        country, 
                        source, 
-                       experiment 
+                       exp_group 
                     FROM 
                         simulator.feed_actions 
                     where 
