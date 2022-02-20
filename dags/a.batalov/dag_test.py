@@ -42,7 +42,18 @@ def dag_simulator():
 
     @task()
     def extract():
-        query = """SELECT distinct toDate(time) as event_date, user_id, country, source, experiment FROM simulator.feed_actions where toDate(time) = '2022-01-26'"""
+        query = """SELECT 
+                       distinct toDate(time) as event_date, 
+                       user_id, 
+                       country, 
+                       source, 
+                       experiment 
+                    FROM 
+                        simulator.feed_actions 
+                    where 
+                        toDate(time) = '2022-01-26' 
+                    format 
+                        TSVWithNames"""
         df_cube = ch_get_df(query)
         return df_cube
 
