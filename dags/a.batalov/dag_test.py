@@ -64,7 +64,7 @@ def dag_simulator():
                             .groupby(['event_date', 'country'])\
                             .nunique()\
                             .reset_index()\
-                            .sort('user_id', ascending=False)\
+                            .sort_values('user_id', ascending=False)\
                             .head(10)
         return countries
 
@@ -74,7 +74,7 @@ def dag_simulator():
                           .groupby(['event_date', 'source'])\
                           .nunique()\
                           .reset_index()\
-                          .sort('user_id', ascending=False)\
+                          .sort_values('user_id', ascending=False)\
                           .head(10)
         return sources
 
