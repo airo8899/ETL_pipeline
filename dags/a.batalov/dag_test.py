@@ -1,3 +1,5 @@
+# coding=utf-8
+
 from datetime import datetime, timedelta
 from airflow.decorators import dag, task
 import pandas as pd
@@ -6,12 +8,13 @@ from io import StringIO
 import requests
 
 
+# Функция для CH
 def ch_get_df(query='Select 1', host='https://clickhouse.lab.karpov.courses', user='student', password='dpo_python_2020'):
     r = requests.post(host, data=query.encode("utf-8"), auth=(user, password), verify=False)
-    result = pd.read_csv(StringIO(r.text))
+    result = pd.read_csv(StringIO(r.text), sep='\t')
     return result
 
-
+# Дефолтные параметры, которые прокидываются в таски
 default_args = {
     'owner': 'a.batalov',
     'depends_on_past': False,
@@ -20,8 +23,10 @@ default_args = {
     'start_date': datetime(2022, 2, 15),
 }
 
+# Интервал запуска DAG
 schedule_interval = '0 23 * * *'
 
+# Ботик телеграма, в который будут приходить статусы выполнения
 # def send_message(context):
 #     if BOT_TOKEN:
 #         bot = telegram.Bot(token=BOT_TOKEN)
@@ -33,13 +38,44 @@ schedule_interval = '0 23 * * *'
 
 
 @dag(default_args=default_args, catchup=False, schedule_interval=schedule_interval)
-def dag_test():
+def dag_simulator():
+
     @task()
-    def task_test():
-        query = """SELECT * FROM simulator.feed_actions where toDate(time) = '2022-01-26' limit 10"""
-        df = ch_get_df(query)
-        print(df.head())
+    def extract():
+        query = """SELECT distinct toDate(time) as event_date, user_id, country, source, experiment FROM simulator.feed_actions where toDate(time) = '2022-01-26'"""
+        df_cube = ch_get_df(query)
+        return df_cube
 
-    task_test()
+    @task()
+    def transform_countries(df_cube):
+        countries = df_cube[['event_date', 'country', 'user_id']]\
+                            .groupby(['event_date', 'country'])\
+                            .nuinque()\
+                            .reset_index()\
+                            .sort('user_id', ascending=False)\
+                            .head(10)
+        return countries
 
-dag_test = dag_test()
+    @task()
+    def transform_sources(df_cube):
+        sources = df_cube[['event_date', 'country', 'source']]\
+                          .groupby(['event_date', 'source'])\
+                          .nuinque()\
+                          .reset_index()\
+                          .sort('user_id', ascending=False)\
+                          .head(10)
+        return sources
+
+    @task()
+    def load(countries, sources):
+        print('Top counties by users')
+        print(countries.to_csv(index=False, header=False))
+        print('Top sources by users')
+        print(sources.to_csv(index=False, header=False))
+
+    df_cube = extract()
+    countries = transform_countries(df_cube)
+    sources = transform_sources(df_cube)
+    load(countries, sources)
+
+dag_test = dag_simulator()
