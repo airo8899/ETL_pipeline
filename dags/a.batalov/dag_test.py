@@ -70,7 +70,7 @@ def dag_simulator():
 
     @task()
     def transform_sources(df_cube):
-        sources = df_cube[['event_date', 'country', 'source']]\
+        sources = df_cube[['event_date', 'source', 'user_id']]\
                           .groupby(['event_date', 'source'])\
                           .nunique()\
                           .reset_index()\
