@@ -55,7 +55,8 @@ def dag_simulator():
                     group by
                         event_date,
                         country,
-                        source"""
+                        source
+                    format TSVWithNames"""
         df_cube = ch_get_df(query)
         print(df_cube)
         return df_cube
