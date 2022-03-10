@@ -43,46 +43,44 @@ def dag_simulator():
     @task()
     def extract():
         query = """SELECT 
-                       distinct toDate(time) as event_date, 
-                       user_id, 
+                       toDate(time) as event_date, 
                        country, 
-                       source, 
-                       exp_group 
+                       source,
+                       count() as likes
                     FROM 
                         simulator.feed_actions 
                     where 
                         toDate(time) = '2022-01-26' 
-                    format 
-                        TSVWithNames"""
+                        and action = 'like'
+                    group by
+                        event_date,
+                        country,
+                        source"""
         df_cube = ch_get_df(query)
         print(df_cube)
         return df_cube
 
     @task()
     def transform_countries(df_cube):
-        countries = df_cube[['event_date', 'country', 'user_id']]\
+        countries = df_cube[['event_date', 'country', 'likes']]\
                             .groupby(['event_date', 'country'])\
-                            .nunique()\
-                            .reset_index()\
-                            .sort_values('user_id', ascending=False)\
-                            .head(10)
+                            .sum()\
+                            .reset_index()
         return countries
 
     @task()
     def transform_sources(df_cube):
-        sources = df_cube[['event_date', 'source', 'user_id']]\
+        sources = df_cube[['event_date', 'source', 'likes']]\
                           .groupby(['event_date', 'source'])\
-                          .nunique()\
-                          .reset_index()\
-                          .sort_values('user_id', ascending=False)\
-                          .head(10)
+                          .sum()\
+                          .reset_index()
         return sources
 
     @task()
     def load(countries, sources):
-        print('Top counties by users')
+        print('Likes by country')
         print(countries.to_csv(index=False, header=False))
-        print('Top sources by users')
+        print('Likes by source')
         print(sources.to_csv(index=False, header=False))
 
     df_cube = extract()
