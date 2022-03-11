@@ -56,6 +56,7 @@ def dag_sim_final():
                         user
                     format TSVWithNames"""
         df_cube = ch_get_df(query)
+        print(df_cube)
         return df_cube
 
     def extract_messages():
