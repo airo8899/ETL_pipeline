@@ -32,7 +32,7 @@ schedule_interval = '0 23 * * *'
 @dag(default_args=default_args, catchup=False, schedule_interval=schedule_interval)
 def dag_sim_final():
 
-    metric_list = ['event_date', 'gender', 'likes', 'views', 'messages_sent', 'messages_recieved', 'users_sent', 'users_recieved']
+    metric_list = ['event_date', 'likes', 'views', 'messages_sent', 'messages_recieved', 'users_sent', 'users_recieved']
 
     @task()
     def extract_feed():
