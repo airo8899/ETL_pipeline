@@ -129,6 +129,7 @@ def dag_sim_final():
     def transform_metric(df_cube, one_metric):
         full_metric_list = metric_list + [one_metric]
         group_metric_list = ['event_date'] + [one_metric]
+        print(df_cube[full_metric_list])
         countries = df_cube[full_metric_list]\
                             .groupby(group_metric_list)\
                             .sum()\
