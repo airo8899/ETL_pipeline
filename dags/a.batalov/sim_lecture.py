@@ -67,7 +67,22 @@ def dag_sim_example():
         df_cube = ch_get_df(query=query)
         return df_cube
 
+    @task
+    def transfrom_source(df_cube):
+        df_cube_source = df_cube[['event_date', 'source', 'likes']]\
+            .group(['event_date', 'source'])\
+            .sum()\
+            .reset_index()
+        return df_cube_source
+
+    @task
+    def load(df_cube_source):
+        print('Likes per source')
+        print(df_cube_source.to_csv(index=False, sep='\t'))
+
     df_cube = extract()
+    df_cube_source = transfrom_source(df_cube)
+    load(df_cube_source)
 
 dag_sim_example = dag_sim_example()
 
