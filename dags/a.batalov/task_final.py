@@ -53,7 +53,8 @@ def dag_sim_final():
                         gender,
                         age,
                         os,
-                        user"""
+                        user
+                    format TSVWithNames"""
         df_cube = ch_get_df(query)
         return df_cube
 
@@ -110,7 +111,8 @@ def dag_sim_final():
                         os,
                         user
                     ) as recieve
-                    using user"""
+                    using user
+                    format TSVWithNames"""
         df_cube = ch_get_df(query)
         return df_cube
 
