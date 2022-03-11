@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 from io import StringIO
 import requests
+
 from airflow.decorators import dag, task
 from airflow.operators.python import get_current_context
 
@@ -15,6 +16,21 @@ def ch_get_df(query='Select 1', host='https://clickhouse.lab.karpov.courses', us
     return result
 
 
+query = """SELECT 
+               toDate(time) as event_date, 
+               country, 
+               source,
+               count() as likes
+            FROM 
+                simulator.feed_actions 
+            where 
+                toDate(time) = '2022-01-26' 
+                and action = 'like'
+            group by
+                event_date,
+                country,
+                source
+            format TSVWithNames"""
 
 # Дефолтные параметры, которые прокидываются в таски
 default_args = {
@@ -28,7 +44,32 @@ default_args = {
 # Интервал запуска DAG
 schedule_interval = '0 23 * * *'
 
+@dag(default_args=default_args, schedule_interval=schedule_interval, catchup=False)
+def dag_sim_example():
 
+    @task()
+    def extract():
+        query = """SELECT 
+                       toDate(time) as event_date, 
+                       country, 
+                       source,
+                       count() as likes
+                    FROM 
+                        simulator.feed_actions 
+                    where 
+                        toDate(time) = '2022-01-26' 
+                        and action = 'like'
+                    group by
+                        event_date,
+                        country,
+                        source
+                    format TSVWithNames"""
+        df_cube = ch_get_df(query=query)
+        return df_cube
+
+    df_cube = extract()
+
+dag_sim_example = dag_sim_example()
 
 
 
