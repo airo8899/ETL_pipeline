@@ -58,7 +58,6 @@ def dag_simulator():
                         source
                     format TSVWithNames"""
         df_cube = ch_get_df(query)
-        print(df_cube)
         return df_cube
 
     @task()
@@ -78,10 +77,10 @@ def dag_simulator():
         return sources
 
     @task()
-    def load(countries, sources):
-        print('Likes by country')
+    def load(countries, sources, ds):
+        print(f'Likes by country for date {ds}')
         print(countries.to_csv(index=False, header=False))
-        print('Likes by source')
+        print(f'Likes by source for date {ds}')
         print(sources.to_csv(index=False, header=False))
 
     df_cube = extract()
