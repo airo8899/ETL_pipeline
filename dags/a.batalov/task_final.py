@@ -128,7 +128,9 @@ def dag_sim_final():
     @task()
     def transform_metric(df_cube, one_metric):
         print('task start')
+        print(df_cube)
         full_metric_list = metric_list + [one_metric]
+        print(full_metric_list)
         group_metric_list = ['event_date'] + [one_metric]
         print(df_cube[full_metric_list])
         countries = df_cube[full_metric_list]\
