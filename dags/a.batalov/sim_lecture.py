@@ -70,7 +70,7 @@ def dag_sim_example():
     @task
     def transfrom_source(df_cube):
         df_cube_source = df_cube[['event_date', 'source', 'likes']]\
-            .group(['event_date', 'source'])\
+            .groupby(['event_date', 'source'])\
             .sum()\
             .reset_index()
         return df_cube_source
