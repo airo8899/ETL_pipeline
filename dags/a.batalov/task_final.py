@@ -56,7 +56,6 @@ def dag_sim_final():
                         user
                     format TSVWithNames"""
         df_cube = ch_get_df(query)
-        print(df_cube)
         return df_cube
 
     @task()
@@ -120,19 +119,13 @@ def dag_sim_final():
 
     @task()
     def join_cubes(messages, feeds):
-        print(messages)
-        print(feeds)
-        final_cube = messages.merge(feeds, how='outer', on=['user', 'event_date', 'gender', 'age', 'os']).fillna(0)
+        final_cube = messages.merge(feeds, how='outer', on=['user', 'event_date', 'gender', 'age', 'os']).dropna()
         return final_cube
 
     @task()
     def transform_metric(df_cube, one_metric):
-        print('task start')
-        print(df_cube)
         full_metric_list = metric_list + [one_metric]
-        print(full_metric_list)
         group_metric_list = ['event_date'] + [one_metric]
-        print(df_cube[full_metric_list])
         countries = df_cube[full_metric_list]\
                             .groupby(group_metric_list)\
                             .sum()\
@@ -144,11 +137,11 @@ def dag_sim_final():
         context = get_current_context()
         ds = context['ds']
         print(f'Metrics by os for date {ds}')
-        print(os.to_csv(index=False, header=False))
+        print(os.to_csv(index=False, header=True, sep='\t'))
         print(f'Metrics by age for date {ds}')
-        print(age.to_csv(index=False, header=False))
+        print(age.to_csv(index=False, header=True, sep='\t'))
         print(f'Metrics by gender for date {ds}')
-        print(gender.to_csv(index=False, header=False))
+        print(gender.to_csv(index=False, header=True, sep='\t'))
 
     df_cube_feed = extract_feed()
     df_cube_messages = extract_messages()
