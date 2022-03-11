@@ -122,7 +122,7 @@ def dag_sim_final():
     def join_cubes(messages, feeds):
         print(messages)
         print(feeds)
-        final_cube = messages.merge(feeds, how='outer', on='user').fillna(0)
+        final_cube = messages.merge(feeds, how='outer', on=['user', 'event_date', 'gender', 'age', 'os']).fillna(0)
         return final_cube
 
     @task()
