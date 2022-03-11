@@ -85,9 +85,11 @@ def dag_sim_example():
 
     @task
     def load(df_cube_source, df_cube_country):
-        print('Likes per source')
+        context = get_current_context()
+        ds = context['ds']
+        print(f'Likes per source for {ds}')
         print(df_cube_source.to_csv(index=False, sep='\t'))
-        print('Likes per country')
+        print(f'Likes per country for {ds}')
         print(df_cube_country.to_csv(index=False, sep='\t'))
 
     df_cube = extract()
