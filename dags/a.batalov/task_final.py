@@ -59,6 +59,7 @@ def dag_sim_final():
         print(df_cube)
         return df_cube
 
+    @task()
     def extract_messages():
         query = """SELECT
                         event_date,
