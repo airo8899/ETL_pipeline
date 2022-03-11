@@ -76,13 +76,24 @@ def dag_sim_example():
         return df_cube_source
 
     @task
-    def load(df_cube_source):
+    def transfrom_countries(df_cube):
+        df_cube_country = df_cube[['event_date', 'country', 'likes']]\
+            .groupby(['event_date', 'country'])\
+            .sum()\
+            .reset_index()
+        return df_cube_country
+
+    @task
+    def load(df_cube_source, df_cube_country):
         print('Likes per source')
         print(df_cube_source.to_csv(index=False, sep='\t'))
+        print('Likes per country')
+        print(df_cube_country.to_csv(index=False, sep='\t'))
 
     df_cube = extract()
     df_cube_source = transfrom_source(df_cube)
-    load(df_cube_source)
+    df_cube_country = transfrom_countries(df_cube)
+    load(df_cube_source, df_cube_country)
 
 dag_sim_example = dag_sim_example()
 
