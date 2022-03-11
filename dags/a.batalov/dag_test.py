@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from airflow.decorators import dag, task
 import pandas as pd
 from io import StringIO
-#from airflow.operators.python import get_current_context
+from airflow.operators.python import get_current_context
 import requests
 
 
@@ -77,7 +77,9 @@ def dag_simulator():
         return sources
 
     @task()
-    def load(countries, sources, ds):
+    def load(countries, sources):
+        context = get_current_context()
+        ds = context['ds']
         print(f'Likes by country for date {ds}')
         print(countries.to_csv(index=False, header=False))
         print(f'Likes by source for date {ds}')

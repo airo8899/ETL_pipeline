@@ -5,6 +5,7 @@ import pandas as pd
 from io import StringIO
 import requests
 from airflow.decorators import dag, task
+from airflow.operators.python import get_current_context
 
 
 # Функция для CH
