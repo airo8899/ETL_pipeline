@@ -137,7 +137,7 @@ def dag_rep():
         df.reset_index(inplace=True)
         # And it still does not work!
         context = get_current_context()
-        print(f'Res {context['ds']}')
+        print(f"""Res {context['ds']}""")
         print(df.to_csv(index=False, sep='\t'))
         
         # ph.to_clickhouse(df, table='test', connection=connection)
