@@ -132,8 +132,8 @@ def dag_rep():
         return res
     
     @task
-    def load(*args):
-        df = pd.concat(args).reset_index()
+    def load(args):
+        df = pd.concat(*args).reset_index()
         context = get_current_context()
         ds = context['ds']
         print(f'Res {ds}')
