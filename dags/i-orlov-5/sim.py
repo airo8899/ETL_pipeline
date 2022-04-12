@@ -134,6 +134,7 @@ def dag_rep():
     @task
     def load(*args):
         df = pd.concat(args).reset_index()
+        context = get_current_context()
         ds = context['ds']
         print(f'Res {ds}')
         print(df.to_csv(index=False, sep='\t'))
