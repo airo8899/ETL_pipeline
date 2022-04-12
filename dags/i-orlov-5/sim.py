@@ -133,9 +133,7 @@ def dag_rep():
     
     @task
     def load(*args):
-        df = pd.concat(args).reset_index()
-        df.reset_index(inplace=True)
-        # And it still does not work!
+        df = pd.concat(args).reset_index().drop('index', axis=1)
         context = get_current_context()
         print(f"""Res {context['ds']}""")
         print(df.to_csv(index=False, sep='\t'))
