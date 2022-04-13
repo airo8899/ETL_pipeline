@@ -65,4 +65,4 @@ def dag_sim_example():
     
     df_cube = extract()
     
-dag_sim_example = dag_sim_example()
+dag_ofedorova = dag_sim_example()
