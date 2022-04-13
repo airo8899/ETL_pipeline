@@ -1,4 +1,7 @@
 # coding=utf-8
+import os
+
+os.system('pip install pandahouse')
 
 from datetime import datetime, timedelta
 import pandas as pd
@@ -8,12 +11,25 @@ from io import StringIO
 from airflow.decorators import dag, task
 from airflow.operators.python import get_current_context
 
+class Getch:
+    def __init__(self, query, db='simulator_20220320'):
+        self.connection = {
+            'host': 'https://clickhouse.lab.karpov.courses',
+            'password': 'dpo_python_2020',
+            'user': 'student',
+            'database': db,
+        }
+        self.query = query
+        self.getchdf
 
-def ch_get_df(query, names, host='https://clickhouse.lab.karpov.courses', user='student', password='dpo_python_2020'):
-    r = requests.post(host, data=query.encode("utf-8"), auth=(user, password), verify=False)
-    result = pd.read_csv(StringIO(r.text), sep='\t', names=names)
-    return result
+    @property
+    def getchdf(self):
+        try:
+            self.df = ph.read_clickhouse(self.query, connection=self.connection)
 
+        except Exception as err:
+            print("\033[31m {}".format(err))
+            exit(0)
 
 # Default parameters for tasks
 default_args = {
@@ -25,7 +41,7 @@ default_args = {
 }
 
 # DAG run interval
-schedule_interval = '0 23 * * *'
+schedule_interval = '0 10 * * *'
 
 @dag(default_args=default_args, schedule_interval=schedule_interval, catchup=False)
 def dag_rep():
@@ -47,7 +63,6 @@ def dag_rep():
                os,
                source
         """
-    feed_colnames = ('id', 'event_date', 'gender', 'age', 'os', 'source', 'likes', 'views')
 
     msg_query = """
         select id, event_date, messages_sent, messages_received, users_sent, users_received,
@@ -109,12 +124,11 @@ def dag_rep():
             using(id, event_date, gender, age, os, source)
         )
         """
-    msg_colnames = ('id', 'event_date', 'messages_sent', 'messages_received', 'users_sent', 'users_received', 'gender', 'age', 'os', 'source')
     
 
     @task
-    def extract_data(query, colnames):
-        return ch_get_df(query, colnames)
+    def extract_data(query):
+        return Getch(query).df
     
     @task
     def join_dfs(feed_df, msg_df):
@@ -140,8 +154,8 @@ def dag_rep():
         
         # ph.to_clickhouse(df, table='test', connection=connection)
         
-    feed_df = extract_data(feed_query, feed_colnames)
-    msg_df = extract_data(msg_query, msg_colnames)
+    feed_df = extract_data(feed_query)
+    msg_df = extract_data(msg_query)
     
     merged_df = join_dfs(feed_df, msg_df)
     
