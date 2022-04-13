@@ -5,6 +5,7 @@ os.system('pip install pandahouse')
 
 from datetime import datetime, timedelta
 import pandas as pd
+import pandahouse as ph
 import requests
 from io import StringIO
 
