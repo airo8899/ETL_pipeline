@@ -5,7 +5,7 @@ os.system('pip install pandahouse')
 
 from datetime import datetime, timedelta
 import pandas as pd
-import pandahouse as ph
+import pandahouse
 import requests
 from io import StringIO
 
@@ -26,7 +26,7 @@ class Getch:
     @property
     def getchdf(self):
         try:
-            self.df = ph.read_clickhouse(self.query, connection=self.connection)
+            self.df = pandahouse.read_clickhouse(self.query, connection=self.connection)
 
         except Exception as err:
             print("\033[31m {}".format(err))
@@ -37,7 +37,7 @@ default_args = {
     'owner': 'i-orlov-5',
     'depends_on_past': False,
     'retries': 2,
-    'retry_delay': timedelta(minutes=5),
+    'retry_delay': timedelta(minutes=1),
     'start_date': datetime(2022, 4, 10),
 }
 
