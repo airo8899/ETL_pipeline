@@ -1,3 +1,4 @@
+pip install pandahouse
 from datetime import datetime, timedelta
 import pandas as pd
 import pandahouse as ph
