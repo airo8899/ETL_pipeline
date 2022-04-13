@@ -10,7 +10,7 @@ default_args = {
     'depends_on_past': False,
     'retries': 2,
     'retry_delay': timedelta(minutes=5),
-    'start_date': datetime(2022, 4, 12),
+    'start_date': datetime(2022, 4, 11),
 }
 
 # Интервал запуска DAG
