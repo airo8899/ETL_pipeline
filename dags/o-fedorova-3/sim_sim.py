@@ -38,7 +38,7 @@ default_args = {
 }
 
 # Интервал запуска DAG
-schedule_interval = '17 17 * * *'
+schedule_interval = '0 23 * * *'
 
 @dag(default_args=default_args, schedule_interval=schedule_interval, catchup=False)
 def dag_sim_example():
