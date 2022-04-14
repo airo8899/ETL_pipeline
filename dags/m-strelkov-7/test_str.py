@@ -17,6 +17,11 @@ default_args = {
     'start_date': datetime(2022, 4, 11),
 }
 
+
+def ch_get_df(query, host='https://clickhouse.lab.karpov.courses', user='student', password='dpo_python_2020'):
+    r = requests.post(host, data=query.encode("utf-8"), auth=(user, password), verify=False)
+    result = pd.read_csv(StringIO(r.text), sep='\t')
+
 # Интервал запуска DAG
 schedule_interval = '0 8 * * *'
 
@@ -54,21 +59,26 @@ def gender_category(x):
 @dag(default_args=default_args, schedule_interval=schedule_interval, catchup=False)
 def dag_etl_strelkov():    
     
-    @task
-    def extract_msg():
-
-        message_query='''
+        message='''
         select toDate(time) as event_date,
             user_id, reciever_id, os, gender, age
         from simulator_20220320.message_actions
         where toDate(time) = today() - 1
-        '''
+        format TSVWithNames'''
 
-        mes_df_start = ph.read_clickhouse(query=message_query, connection = connection)
-
-        return mes_df_start
+        feed = '''
+        select min(toDate(time)) as event_date,
+            user_id,
+            countIf(action='like') as likes,
+            countIf(action='view') as views,
+            min(age) as age,
+            min(gender) as gender,
+            min(os) as os
+        from simulator_20220320.feed_actions
+        where toDate(time) = today() - 1
+        group by user_id
+        format TSVWithNames'''
     
-    @task
     def transform_msg(mes_df_start):
 
         mes_df_start['age'] = mes_df_start['age'].apply(age_category)
@@ -112,23 +122,8 @@ def dag_etl_strelkov():
         return df_mes_final
 
     @task
-    def extract_feed():
-
-        feed_query = '''
-        select min(toDate(time)) as event_date,
-            user_id,
-            countIf(action='like') as likes,
-            countIf(action='view') as views,
-            min(age) as age,
-            min(gender) as gender,
-            min(os) as os
-        from simulator_20220320.feed_actions
-        where toDate(time) = today() - 1
-        group by user_id
-        '''
-        df_feed_final = ph.read_clickhouse(query=feed_query, connection = connection)
-
-        return df_feed_final
+    def extract_data(query):
+        return ch_get_df(query)
 
     @task
     def transform_feed(df_feed_final):
@@ -222,9 +217,9 @@ def dag_etl_strelkov():
 
         ph.to_clickhouse(df=final, table='gdv', index=False, connection = upload_con)
 
-    extracted_msg = extract_msg()
+    extracted_msg = extract_data(message)
     final_msg = transform_msg(extracted_msg)
-    extracted_feed = extract_feed()
+    extracted_feed = extract_data(feed)
     final_feed = transform_feed(extracted_feed)
     feed_msg_merged = feed_msg_merge(final_feed, final_msg)
     gender_df = group_gender(feed_msg_merged)
