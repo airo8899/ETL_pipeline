@@ -9,7 +9,7 @@ from airflow.operators.python import get_current_context
 
 # Дефолтные параметры, которые прокидываются в таски
 default_args = {
-    'owner': 'd.goncharov-5',
+    'owner': 'd-goncharov-5',
     'depends_on_past': False,
     'retries': 2,
     'retry_delay': timedelta(minutes=5),
