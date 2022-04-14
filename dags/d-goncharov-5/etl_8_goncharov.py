@@ -1,4 +1,6 @@
-pip install pandahouse
+from pip._internal import main as pipmain
+pipmain(['install', 'pandahouse'])
+
 from datetime import datetime, timedelta
 import pandas as pd
 import pandahouse as ph
