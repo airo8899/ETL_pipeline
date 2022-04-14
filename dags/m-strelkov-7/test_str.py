@@ -78,7 +78,7 @@ def dag_etl_strelkov():
         where toDate(time) = today() - 1
         group by user_id
         format TSVWithNames'''
-    
+    @task
     def transform_msg(mes_df_start):
 
         mes_df_start['age'] = mes_df_start['age'].apply(age_category)
