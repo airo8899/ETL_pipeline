@@ -65,4 +65,4 @@ def dag_etl_ofedorova():
     
     df_cube = extract()
     
-dag_etl_ofedorova() = dag_etl_ofedorova()
+dag_etl_ofedorova = dag_etl_ofedorova()
