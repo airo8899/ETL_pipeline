@@ -1,3 +1,6 @@
+import os
+os.system('pip install pandahouse')
+import pandahouse
 from datetime import datetime, timedelta
 import pandas as pd
 import requests
@@ -8,7 +11,6 @@ from airflow.decorators import dag, task
 from airflow.operators.python import get_current_context
 
 from pip._internal import main as pipmain
-pipmain(['install', 'pandahouse'])
 
 def ch_get_df(query, host='https://clickhouse.lab.karpov.courses', user='student', password='dpo_python_2020'):
     r = requests.post(host, data=query.encode("utf-8"), auth=(user, password), verify=False)
@@ -23,7 +25,7 @@ default_args = {
     'start_date': datetime(2022, 4, 11),
 }
 
-schedule_interval = '0 23 * * *'
+schedule_interval = '0 9 * * *'
 
 @dag(default_args=default_args, schedule_interval=schedule_interval, catchup=False)
 def dag_etl():
