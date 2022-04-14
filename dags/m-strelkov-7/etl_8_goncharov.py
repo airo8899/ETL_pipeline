@@ -10,7 +10,7 @@ from airflow.operators.python import get_current_context
 
 # Дефолтные параметры, которые прокидываются в таски
 default_args = {
-    'owner': 'd-goncharov-5',
+    'owner': 'm-strelkov-7',
     'depends_on_past': False,
     'retries': 2,
     'retry_delay': timedelta(minutes=5),
@@ -54,7 +54,7 @@ def gender_category(x):
 @dag(default_args=default_args, schedule_interval=schedule_interval, catchup=False)
 def dag_etl_goncharov():    
     
-    @task()
+    @task
     def extract_msg():
 
         message_query='''
@@ -68,7 +68,7 @@ def dag_etl_goncharov():
 
         return mes_df_start
     
-    @task()
+    @task
     def transform_msg(mes_df_start):
 
         mes_df_start['age'] = mes_df_start['age'].apply(age_category)
@@ -111,7 +111,7 @@ def dag_etl_goncharov():
 
         return df_mes_final
 
-    @task()
+    @task
     def extract_feed():
 
         feed_query = '''
@@ -130,7 +130,7 @@ def dag_etl_goncharov():
 
         return df_feed_final
 
-    @task()
+    @task
     def transform_feed(df_feed_final):
 
         df_feed_final['age'] = df_feed_final['age'].apply(age_category)
@@ -138,14 +138,14 @@ def dag_etl_goncharov():
 
         return df_feed_final
 
-    @task()
+    @task
     def feed_msg_merge(df_feed_final, df_mes_final):
 
         df_merge = df_feed_final.merge(df_mes_final, on=['user_id','gender','os','age', 'event_date'], how='outer').fillna(0)
         return df_merge
 
 
-    @task()
+    @task
     def group_os(merged_df1):
 
         df_os = merged_df1.groupby('os').agg({'event_date':'min', \
@@ -161,7 +161,7 @@ def dag_etl_goncharov():
         return df_os
 
 
-    @task()
+    @task
     def group_gender(merged_df2):
 
         df_gender = merged_df2.groupby('gender').agg({'event_date':'min', \
@@ -176,7 +176,7 @@ def dag_etl_goncharov():
 
         return df_gender
 
-    @task()
+    @task
     def group_age(merged_df3):
 
         df_age = merged_df3.groupby('age').agg({'event_date':'min', \
@@ -191,7 +191,7 @@ def dag_etl_goncharov():
 
         return df_age
 
-    @task()
+    @task
     def concat(df_age, df_os, df_gender):
 
         final = pd.concat([df_gender, df_age, df_os])
@@ -217,7 +217,7 @@ def dag_etl_goncharov():
         return final
 
 
-    @task()
+    @task
     def load(final):
 
         ph.to_clickhouse(df=final, table='gdv', index=False, connection = upload_con)
@@ -230,4 +230,4 @@ def dag_etl_goncharov():
     gender_df = group_gender(feed_msg_merged)
     age_df = group_age(feed_msg_merged)
     
-dag_etl_goncharov = dag_etl_goncharov() 
+dag_etl_test_str = dag_etl_goncharov() 
