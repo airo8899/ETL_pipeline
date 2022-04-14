@@ -221,5 +221,16 @@ def dag_etl_goncharov():
     def load(final):
 
         ph.to_clickhouse(df=final, table='gdv', index=False, connection = upload_con)
+
+    extracted_msg = extract_msg()
+    final_msg = transform_msg(extracted_msg)
+    extracted_feed = extract_feed()
+    final_feed = transform_feed(extracted_feed)
+    feed_msg_merged = feed_msg_merge(final_feed, final_msg)
+    grouped_os = group_os(feed_msg_merge)
+    grouped_gender = group_gender(feed_msg_merge)
+    grouped_age = group_age(feed_msg_merge)
+    concat_res = concat(grouped_age, grouped_os, grouped_gender)
+    loading = load(concat_res) 
     
 dag_etl_goncharov = dag_etl_goncharov()    
