@@ -30,7 +30,7 @@ query = """SELECT
 
 # Дефолтные параметры, которые прокидываются в таски
 default_args = {
-    'owner': 'a.batalov',
+    'owner': 'o-fedorova-3',
     'depends_on_past': False,
     'retries': 2,
     'retry_delay': timedelta(minutes=5),
