@@ -227,9 +227,9 @@ def dag_etl_goncharov():
     extracted_feed = extract_feed()
     final_feed = transform_feed(extracted_feed)
     feed_msg_merged = feed_msg_merge(final_feed, final_msg)
-    grouped_os = group_os(feed_msg_merge)
-    grouped_gender = group_gender(feed_msg_merge)
-    grouped_age = group_age(feed_msg_merge)
+    grouped_os = group_os(feed_msg_merged)
+    grouped_gender = group_gender(feed_msg_merged)
+    grouped_age = group_age(feed_msg_merged)
     concat_res = concat(grouped_age, grouped_os, grouped_gender)
     loading = load(concat_res) 
     
