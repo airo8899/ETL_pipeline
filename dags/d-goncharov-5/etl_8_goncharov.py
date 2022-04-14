@@ -1,5 +1,6 @@
-from pip._internal import main as pipmain
-pipmain(['install', 'pandahouse'])
+import os
+
+os.system('pip install pandahouse')
 
 from datetime import datetime, timedelta
 import pandas as pd
