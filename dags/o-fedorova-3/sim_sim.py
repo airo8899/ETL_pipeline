@@ -38,7 +38,7 @@ default_args = {
 }
 
 # Интервал запуска DAG
-schedule_interval = '0 23 * * *'
+schedule_interval = '30 14 * * *'
 
 @dag(default_args=default_args, schedule_interval=schedule_interval, catchup=False)
 def dag_etl_ofedorova():
