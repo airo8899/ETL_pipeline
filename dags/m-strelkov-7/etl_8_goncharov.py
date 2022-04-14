@@ -62,6 +62,8 @@ def dag_etl_goncharov():
             user_id, reciever_id, os, gender, age
         from simulator_20220320.message_actions
         where toDate(time) = today() - 1
+            and age = 18
+        limit 1000
         '''
 
         mes_df_start = ph.read_clickhouse(query=message_query, connection = connection)
@@ -125,6 +127,8 @@ def dag_etl_goncharov():
         from simulator_20220320.feed_actions
         where toDate(time) = today() - 1
         group by user_id
+        having age = 18
+        limit 1000
         '''
         df_feed_final = ph.read_clickhouse(query=feed_query, connection = connection)
 
