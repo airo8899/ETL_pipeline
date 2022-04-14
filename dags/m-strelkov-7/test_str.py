@@ -59,25 +59,26 @@ def gender_category(x):
 @dag(default_args=default_args, schedule_interval=schedule_interval, catchup=False)
 def dag_etl_strelkov():    
     
-        message='''
-        select toDate(time) as event_date,
-            user_id, reciever_id, os, gender, age
-        from simulator_20220320.message_actions
-        where toDate(time) = today() - 1
-        format TSVWithNames'''
+    message='''
+    select toDate(time) as event_date,
+        user_id, reciever_id, os, gender, age
+    from simulator_20220320.message_actions
+    where toDate(time) = today() - 1
+    format TSVWithNames'''
 
-        feed = '''
-        select min(toDate(time)) as event_date,
-            user_id,
-            countIf(action='like') as likes,
-            countIf(action='view') as views,
-            min(age) as age,
-            min(gender) as gender,
-            min(os) as os
-        from simulator_20220320.feed_actions
-        where toDate(time) = today() - 1
-        group by user_id
-        format TSVWithNames'''
+    feed = '''
+    select min(toDate(time)) as event_date,
+        user_id,
+        countIf(action='like') as likes,
+        countIf(action='view') as views,
+        min(age) as age,
+        min(gender) as gender,
+        min(os) as os
+    from simulator_20220320.feed_actions
+    where toDate(time) = today() - 1
+    group by user_id
+    format TSVWithNames'''
+    
     @task
     def transform_msg(mes_df_start):
 
