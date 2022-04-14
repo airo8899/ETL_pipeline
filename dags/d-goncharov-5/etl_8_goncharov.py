@@ -162,7 +162,7 @@ def dag_etl_goncharov():
 
 
     @task()
-    def group_os(df_merge):
+    def group_gender(df_merge):
 
         df_gender = df_merge.groupby('gender').agg({'event_date':'min', \
                                 'likes':'sum', \
