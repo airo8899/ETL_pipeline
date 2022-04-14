@@ -10,7 +10,7 @@ from airflow.operators.python import get_current_context
 
 # Дефолтные параметры, которые прокидываются в таски
 default_args = {
-    'owner': 'd-goncharov-5',
+    'owner': 'm-strelkov-7',
     'depends_on_past': False,
     'retries': 2,
     'retry_delay': timedelta(minutes=5),
@@ -52,7 +52,7 @@ def gender_category(x):
     
 
 @dag(default_args=default_args, schedule_interval=schedule_interval, catchup=False)
-def dag_etl_goncharov():    
+def dag_etl_strelkov():    
     
     @task()
     def extract_msg():
@@ -230,4 +230,4 @@ def dag_etl_goncharov():
     gender_df = group_gender(feed_msg_merged)
     age_df = group_age(feed_msg_merged)
     
-dag_etl_goncharov = dag_etl_goncharov() 
+dag_etl_strelkov = dag_etl_strelkov() 
