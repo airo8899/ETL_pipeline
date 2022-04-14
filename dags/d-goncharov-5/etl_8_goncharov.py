@@ -233,4 +233,4 @@ def dag_etl_goncharov():
     concat_res = concat(grouped_age, grouped_os, grouped_gender)
     loading = load(concat_res) 
     
-dag_etl_goncharov = dag_etl_goncharov()    
+dag_etl_goncharov = dag_etl_goncharov()   
