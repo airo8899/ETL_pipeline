@@ -19,10 +19,10 @@ def ch_get_df(query, host='https://clickhouse.lab.karpov.courses', user='student
     return result
 
 default_args = {
-    'owner': 'sokruzhnov',
+    'owner': 's-okruzhnov-5',
     'depends_on_past': False,
     'retries': 2,
-    'retry_delay': timedelta(minutes=5),
+    'retry_delay': timedelta(minutes=2),
     'start_date': datetime(2022, 4, 11),
 }
 
@@ -99,11 +99,12 @@ def dag_etl():
         print(df.to_csv(index=False, sep='\t'))
         connection = {
                         'host': 'https://clickhouse.lab.karpov.courses',
-                        'password': 'dpo_python_2020',
-                        'user': 'student',
+                        'password': '656e2b0c9c',
+                        'user': 'student-rw',
                         'database': 'test'
         }
-        pandahouse.to_clickhouse(df, 'sokruzhnov_test', connection=connection)
+
+        pandahouse.to_clickhouse(df, 'sokruzhnov_test', index=False, connection = connection)
         
         
     feed = extract_data(feed_query)
