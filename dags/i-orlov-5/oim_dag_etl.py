@@ -6,7 +6,7 @@ os.system("pip install pandahouse")
 from datetime import datetime, timedelta
 import pandas as pd
 import pandahouse as ph
-import requests
+import numpy as np
 from io import StringIO
 
 from airflow.decorators import dag, task
