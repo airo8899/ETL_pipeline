@@ -193,10 +193,8 @@ def dag_ofedorova_new():
 
         final_metrics = union_metrics.loc[:, new_cols]
         final_metrics = final_metrics.reset_index().drop('index', axis =1)
-        final_metrics['event_date']=final_metrics['event_date']\
-        .apply(lambda x: datetime.isoformat(x))
+        final_metrics['event_date']=final_metrics['event_date'].apply(lambda x: datetime.isoformat(x))
         final_metrics = final_metrics.astype({
-
                        'views':'int', \
                        'likes':'int', \
                        'messages_recieved':'int', \
