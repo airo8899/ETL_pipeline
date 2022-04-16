@@ -3,7 +3,6 @@ import pandas as pd
 from io import StringIO
 import requests
 import pandahouse as ph
-from pandahouse.http import execute
 from pandahouse.core import to_clickhouse, read_clickhouse
 
 from airflow.decorators import dag, task
