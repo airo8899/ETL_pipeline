@@ -128,10 +128,10 @@ def dag_ofedorova_new():
         
         ## функция преобразования пола
         def transform_gender(x):
-        if x == 1:
-            return 'male'
-        else:
-            return 'female'
+            if x == 1:
+                return 'male'
+            else:
+                return 'female'
 
         gender = final_table.groupby('gender').agg({'event_date':'min', \
                                     'likes':'sum', \
