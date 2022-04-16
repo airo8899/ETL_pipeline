@@ -155,15 +155,21 @@ def oim_dag_etl():
     def create_table():
         ph.execute(connection=upload_connection, query=create_query)
     
-    @task
     def extract_data(query):
         return Getch(query).df
+    
+    @task
+    def extract_feed():
+        return extract_data(feed_query)
+    
+    @task
+    def extract_msg():
+        return extract_data(msg_query)
     
     @task
     def join_dfs(df1, df2):
         return df1.merge(df2, how='outer', on=['id', 'event_date', 'gender', 'age', 'os', 'source'])
     
-    @task
     def transform_metric(df, metric_name):
         res = (
             df[['event_date', metric_name, *val_names]]
@@ -175,6 +181,14 @@ def oim_dag_etl():
         res['metric_value'] = res['metric_value'].astype('U')
         res.insert(1, 'metric', metric_name)
         return res
+    
+    @task
+    def transform_os(df):
+        return transform_metric(df=df, metric_name='os')
+    
+    @task
+    def transform_gender(df):
+        return transform_metric(df=df, metric_name='gender')
     
     @task
     def transform_age(df, stratify):
@@ -227,13 +241,13 @@ def oim_dag_etl():
         
     create_table()
     
-    feed_df = extract_data(feed_query)
-    msg_df = extract_data(msg_query)
+    feed_df = extract_feed()
+    msg_df = extract_msg()
     
     merged_df = join_dfs(feed_df, msg_df)
     
-    os_df = transform_metric(df=merged_df, metric_name='os')
-    gender_df = transform_metric(df=merged_df, metric_name='gender')
+    os_df = transform_os(df=merged_df)
+    gender_df = transform_gender(df=merged_df)
     age_df = transform_age(df=merged_df, stratify=True)
     
     load(os_df, gender_df, age_df)
