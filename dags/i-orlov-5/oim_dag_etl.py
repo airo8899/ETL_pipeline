@@ -179,8 +179,11 @@ def oim_dag_etl():
     @task
     def transform_age(df, stratify):
         metric_name = 'age'
-        quantiles = [df.age.quantile(q) for q in np.arange(0, 1.1, 0.2)]
-        quantiles = [quantiles[0]-1] + quantiles
+        # This approach was given up because quantiles are not consistent across days
+        # quantiles = [df.age.quantile(q) for q in np.arange(0, 1.1, 0.2)]
+        # quantiles = [quantiles[0]-1] + quantiles
+        
+        age_strats = ((0, 13), (14, 17), (18, 28), (29, 40), (41, 55), (56, 75), (76, 100))
                     
         res = (
             df[['event_date', metric_name, *val_names]]
@@ -192,9 +195,14 @@ def oim_dag_etl():
         
         if stratify:
             res_strat = pd.DataFrame(columns=list(res))
-            for i in range(len(quantiles)-1):
-                res_strat = res_strat.append(res[(res['metric_value'] > quantiles[i]) & (res['metric_value'] <= quantiles[i+1])][[*val_names]].sum().astype(int), ignore_index=True)
-                res_strat.loc[i, 'metric_value'] = f"""({quantiles[i]:.0f}, {quantiles[i+1]:.0f}]"""
+            for i,strat in enumerate(age_strats):
+                res_strat = (
+                    res_strat
+                    .append(res[(res['metric_value'] >= strat[0]) 
+                                & (res['metric_value'] <= strat[1])][[*val_names]]
+                            .sum().astype(int), ignore_index=True)
+                )
+                res_strat.loc[i, 'metric_value'] = f"""{strat[0]:.0f}-{strat[1]:.0f}"""
 
         res_strat.loc[:, 'event_date'] = df.event_date[0]
         res_strat[[*val_names]] = res_strat[[*val_names]].astype(int)
@@ -212,8 +220,8 @@ def oim_dag_etl():
         
         ph.to_clickhouse(df, table='oim', connection=upload_connection, index=False)
         
-        df_ch = Getch("select * from test.oim").df
-        print("Data selected:")
+        df_ch = Getch("select * from test.oim").df.sort_values(['event_date', 'metric'], ascending=[True, False])
+        print("\nData selected:")
         print(df_ch.to_csv(index=False, sep='\t'))
         
         
