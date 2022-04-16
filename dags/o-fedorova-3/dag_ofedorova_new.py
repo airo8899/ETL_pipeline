@@ -35,7 +35,7 @@ connection1 = {
     'database': 'test'}
 
 @dag(default_args=default_args, schedule_interval=schedule_interval, catchup=False)
-def dag_ofedorova_new():
+def dag_ofedorova():
     
     @task
     # В feed_actions для каждого юзера посчитаем число просмотров и лайков контента
@@ -224,6 +224,6 @@ def dag_ofedorova_new():
     
     load(final_metrics)
     
-dag_ofedorova_new = dag_ofedorova_new()
+dag_ofedorova = dag_ofedorova()
     
     
