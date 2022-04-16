@@ -19,7 +19,7 @@ default_args = {
 }
 
 # Интервал запуска DAG
-schedule_interval = '0 8 * *'
+schedule_interval = '45 22 * * *'
 
 
 connection = {
