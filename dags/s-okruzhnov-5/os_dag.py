@@ -104,7 +104,7 @@ def dag_etl():
                         'database': 'test'
         }
 
-        pandahouse.to_clickhouse(df, 'sokruzhnov_test', index=False, connection = connection)
+        pandahouse.to_clickhouse(df, 'okruzhnov_test', index=False, connection = connection)
         
         
     feed = extract_data(feed_query)
