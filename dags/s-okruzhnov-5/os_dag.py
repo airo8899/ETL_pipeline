@@ -32,9 +32,11 @@ schedule_interval = '0 9 * * *'
 def dag_etl():
     feed_query = """SELECT toDate(time) event_date,
                            user_id,
-                           age,
+                           multiIf(age <= 17, 'до 18', age > 17
+                           and age <= 30, '18-30', age > 30
+                           and age <= 50, '31-50', '50+') as age,
                            os,
-                           gender,
+                           If(gender == 0, 'female', 'male') as gender,
                            sum(action = 'like') likes,
                            sum(action = 'view') views
                     FROM simulator_20220320.feed_actions
