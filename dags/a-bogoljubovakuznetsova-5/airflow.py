@@ -31,11 +31,6 @@ class Getch:
             print("\033[31m {}".format(err))
             exit(0)
 
-client = Client('clickhouse.lab.karpov.courses',
-                password='656e2b0c9c',
-                user='student-rw',
-                database='test')
-
 default_args = {
     'owner': 'a-bogoljubovakuznetsova-5',
     'depends_on_past': False,
@@ -112,7 +107,7 @@ def dag_bogoliubova():
         
     @task
     def transform(df_cube):
-        df_cube.astype({'messages_received': 'Int64', 'users_received' : 'Int64'}).dtypes
+        df_cube.astype({'gender': 'UInt64', 'messages_received': 'UInt64', 'users_received' : 'UInt64'}).dtypes
         df_final = df_cube[['event_date', 'gender', 'age', 'os', 'views', 'likes', 
                           'messages_received', 'messages_sent', 'users_received', 'users_sent']]\
             .groupby(['event_date', 'gender', 'age', 'os'])\
@@ -131,6 +126,10 @@ def dag_bogoliubova():
                         'database': 'test'
         }
         if pandahouse.read_clickhouse('EXISTS TABLE test.bogoliubova_test', connection=connection)['result'][0] == 0:
+            client = Client('clickhouse.lab.karpov.courses',
+                password='656e2b0c9c',
+                user='student-rw',
+                database='test')
             q = '''CREATE TABLE IF NOT EXISTS test.bogoliubova_test
                 (       
                     event_date DateTime,
@@ -147,7 +146,8 @@ def dag_bogoliubova():
                 '''
             client.execute(q)
         else:
-            pandahouse.to_clickhouse(df_final, 'bogoliubova_test', index=False, connection = connection)
+            if pandahouse.read_clickhouse("SELECT * FROM test.bogoliubova_test WHERE event_date = today() LIMIT 10", connection=connection)['event_date'].count() == 0:
+                pandahouse.to_clickhouse(df_final, 'bogoliubova_test', index=False, connection = connection)
 
 
     df_feed = extract_feed()
