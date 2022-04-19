@@ -1,7 +1,7 @@
 import os
 os.system('pip install pandahouse')
 
-#from CH import Getch
+from clickhouse_driver import Client
 from datetime import datetime, timedelta
 import pandas as pd
 from io import StringIO
@@ -30,6 +30,11 @@ class Getch:
         except Exception as err:
             print("\033[31m {}".format(err))
             exit(0)
+
+client = Client('clickhouse.lab.karpov.courses',
+                password='656e2b0c9c',
+                user='student-rw',
+                database='test')
 
 default_args = {
     'owner': 'a-bogoljubovakuznetsova-5',
@@ -125,7 +130,24 @@ def dag_bogoliubova():
                         'user': 'student-rw',
                         'database': 'test'
         }
-        pandahouse.to_clickhouse(df_final, 'bogoliubova_test', index=False, connection = connection)
+        if pandahouse.read_clickhouse('EXISTS TABLE test.bogoliubova_test', connection=connection)['result'][0] == 0:
+            q = '''CREATE TABLE IF NOT EXISTS test.bogoliubova_test
+                (       
+                    event_date DateTime,
+                    gender UInt64,
+                    age String,
+                    os String,
+                    views UInt64,
+                    likes UInt64,
+                    messages_received UInt64,
+                    messages_sent UInt64,
+                    users_received UInt64,
+                    users_sent UInt64 
+                ) ENGINE = Log()
+                '''
+            client.execute(q)
+        else:
+            pandahouse.to_clickhouse(df_final, 'bogoliubova_test', index=False, connection = connection)
 
 
     df_feed = extract_feed()
