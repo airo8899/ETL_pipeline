@@ -45,7 +45,7 @@ schedule_interval = '0 9 * * *'
 #date = context['ds']
     
 @dag(default_args=default_args, schedule_interval=schedule_interval, catchup=False)
-def dag_d():
+def dag_bogoliubova():
 
     @task()
     def extract_feed():
@@ -137,4 +137,4 @@ def dag_d():
     df_final = transform(df_cube)
     load(df_final)
 
-dag_d = dag_d()
+dag_bogoliubova = dag_bogoliubova()
