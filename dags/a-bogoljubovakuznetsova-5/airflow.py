@@ -79,10 +79,7 @@ def dag_bogoliubova():
                     SELECT 
                        user_id,
                        count(reciever_id) as messages_sent,
-                       uniq(reciever_id) as users_sent,
-                       gender,
-                       age,
-                       os
+                       uniq(reciever_id) as users_sent
                     FROM 
                         simulator_20220320.message_actions 
                     where 
