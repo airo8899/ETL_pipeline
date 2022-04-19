@@ -1,9 +1,10 @@
+from datetime import datetime, timedelta
+import pandas as pd
+from io import StringIO
+import requests
 import pandahouse as ph
 from pandahouse.http import execute
 from pandahouse.core import to_clickhouse, read_clickhouse
-from datetime import datetime, timedelta
-from io import StringIO
-import requests
 
 from airflow.decorators import dag, task
 from airflow.operators.python import get_current_context
@@ -41,20 +42,20 @@ def dag_sentyurina():
     @task
     # формируем датафрейм из ленты новостей
     def extract_feed():
-        query_feed = """SELECT toDate(time) event_date,
-                           user_id,
-                           age,
-                           os,
-                           gender,
-                           countif(action = 'like') likes,
-                           countif(action = 'view') views
-                    FROM simulator_20220320.feed_actions
-                    WHERE toDate(time) = today() - 1
-                    GROUP BY event_date,
-                             user_id, 
-                             age, 
-                             os, 
-                             gender
+        query_feed = """SELECT toDate(time) event_date, 
+                                user_id,
+                                gender,
+                                age,
+                                os, 
+                                countIf(action='like')  likes,
+                                countIf(action='view') as views
+                            FROM simulator_20220320.feed_actions
+                            WHERE event_date = today() - 1
+                            GROUP BY event_date,
+                                    user_id, 
+                                    gender,
+                                    age,
+                                    os
                              """
         df_feed = ph.read_clickhouse(query=query_feed, connection = connection)
         return df_feed
@@ -62,31 +63,31 @@ def dag_sentyurina():
     @task
     # формируем датафрейм по сообщениям
     def extract_msg():
-        query_msg = """SELECT t1.event_date,
-                          t1.user_id,
-                          t1.users_received,
-                          t2.users_sent,
-                          t1.messages_sent,
-                          t2.messages_received
+        query_msg = """SELECT event_date,
+                                user_id,
+                                messages_sent,
+                                users_sent,
+                                messages_recieved,
+                                users_received
                     FROM
-                    (SELECT toDate(time) event_date,
-                            user_id,
-                            count(distinct reciever_id) users_received,
-                            count(received_id) messages_sent
-                    FROM simulator_20220320.message_actions
-                    WHERE toDate(time) = today() - 1
-                    GROUP BY event_date, user_id) t1
-                    LEFT JOIN 
-                    (SELECT toDate(time), 
-                            reciever_id,
-                            count(distinct user_id) users_sent,
-                            count(user_id) messages_received
-                    FROM simulator_20220320.message_actions
-                    WHERE toDate(time) = today() - 1 
-                    GROUP BY toDate(time), reciever_id) t2
-                    on t1.user_id = t2.reciever_id
-                    """
-        df_msg = ph.read_clickhouse(query=query_msg, connection = connection)
+                        (SELECT toDate(time) event_date,  
+                                user_id,
+                                count() messages_sent,
+                                uniqExact(reciever_id) users_sent
+                            FROM simulator_20220320.message_actions
+                            WHERE event_date = today() - 1
+                            GROUP BY user_id, event_date) t1
+                        JOIN
+                        (SELECT toDate(time) event_date, reciever_id, 
+                                count() messages_recieved,
+                                count(distinct user_id) users_received
+                            FROM simulator_20220320.message_actions
+                            WHERE event_date = today() - 1
+                            GROUP BY reciever_id, event_date) t2
+                            ON t1.user_id = t2.reciever_id
+                            """
+        
+        df_msg = ph.read_clickhouse(query=query_feed, connection = connection)
         return df_msg
     
     @task
@@ -203,14 +204,6 @@ def dag_sentyurina():
     load(final)
     
 dag_sentyurina = dag_sentyurina()
-
-    
-
-
-        
-        
-
-
 
 
     
