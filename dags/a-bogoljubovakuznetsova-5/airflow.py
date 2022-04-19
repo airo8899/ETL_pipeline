@@ -106,7 +106,7 @@ def dag_bogoliubova():
     @task
     def merge(df_feed, df_message):
         df_cube = df_feed.merge(df_message, on='user_id', how='inner')
-        df_cube.astype({'messages_received': 'Int64', 'uders_received' : 'Int64'}).dtypes
+        df_cube.astype({'messages_received': 'Int64', 'users_received' : 'Int64'}).dtypes
         
         
     @task
