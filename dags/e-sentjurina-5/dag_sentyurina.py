@@ -86,7 +86,7 @@ def dag_sentyurina():
                     GROUP BY toDate(time), reciever_id) t2
                     on t1.user_id = t2.reciever_id
                     """
-        df_msg = ph.read_clickhouse(query=query_feed, connection = connection)
+        df_msg = ph.read_clickhouse(query=query_msg, connection = connection)
         return df_msg
     
     @task
