@@ -104,7 +104,7 @@ def dag_bogoliubova():
         return df_message
 
     @task
-    def merge(df_feed, df_message):
+    def merging(df_feed, df_message):
         df_cube = df_feed.merge(df_message, on='user_id', how='inner')
         df_cube.astype({'messages_received': 'Int64', 'users_received' : 'Int64'}).dtypes
         
@@ -133,7 +133,7 @@ def dag_bogoliubova():
 
     df_feed = extract_feed()
     df_message = extract_mes()
-    df_cube = merge(df_feed, df_message)
+    df_cube = merging(df_feed, df_message)
     df_final = transform(df_cube)
     load(df_final)
 
