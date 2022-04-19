@@ -109,12 +109,13 @@ def dag_sentyurina():
 
         msg_and_feed['gender'] = mag_and_feed['gender'].apply(gender_category)
         df_gender = msg_and_feed.groupby('gender').agg({'event_date':'min', \
-                            'likes':'sum', \
-                            'views': 'sum', \
-                            'messages_received':'sum', \
-                            'users_received':'sum', \
-                            'messages_sent':'sum', \
-                            'users_sent':'sum'}).reset_index().copy()
+                                    'likes':'sum', \
+                                    'views': 'sum', \
+                                    'messages_recieved':'sum', \
+                                    'users_received':'sum', \
+                                    'messages_sent':'sum', \
+                                    'users_sent':'sum'}).reset_index().copy()
+
         df_gender['metric'] = 'gender'
         df_gender.rename(columns={'gender':'metric_value'},inplace=True)
         return df_gender
@@ -137,12 +138,13 @@ def dag_sentyurina():
         msg_and_feed['age'] = msg_and_feed['age'].apply(age_category)
 
         df_age = msg_and_feed.groupby('age').agg({'event_date':'min', \
-                            'likes':'sum', \
-                            'views': 'sum', \
-                            'messages_received':'sum', \
-                            'users_received':'sum', \
-                            'messages_sent':'sum', \
-                            'users_sent':'sum'}).reset_index().copy()
+                                    'likes':'sum', \
+                                    'views': 'sum', \
+                                    'messages_recieved':'sum', \
+                                    'users_received':'sum', \
+                                    'messages_sent':'sum', \
+                                    'users_sent':'sum'}).reset_index().copy()
+
         df_age['metric'] = 'age'
         df_age.rename(columns={'age':'metric_value'},inplace=True)
         return df_age
