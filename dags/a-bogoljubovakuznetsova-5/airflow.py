@@ -105,12 +105,12 @@ def dag_bogoliubova():
 
     @task
     def merging(df_feed, df_message):
-        df_cube = df_feed.merge(df_message, on='user_id', how='inner')
-        df_cube.astype({'messages_received': 'Int64', 'users_received' : 'Int64'}).dtypes
+        return df_feed.merge(df_message, on='user_id', how='inner')
         
         
     @task
     def transform(df_cube):
+        df_cube.astype({'messages_received': 'Int64', 'users_received' : 'Int64'}).dtypes
         df_final = df_cube[['event_date', 'gender', 'age', 'os', 'views', 'likes', 
                           'messages_received', 'messages_sent', 'users_received', 'users_sent']]\
             .groupby(['event_date', 'gender', 'age', 'os'])\
