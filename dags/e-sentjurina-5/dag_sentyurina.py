@@ -107,7 +107,8 @@ def dag_sentyurina():
             else: 
                 return 'female'
 
-        msg_and_feed['gender'] = mag_and_feed['gender'].apply(gender_category)
+        msg_and_feed['gender'] = msg_and_feed['gender'].apply(gender_category)
+
         df_gender = msg_and_feed.groupby('gender').agg({'event_date':'min', \
                                     'likes':'sum', \
                                     'views': 'sum', \
