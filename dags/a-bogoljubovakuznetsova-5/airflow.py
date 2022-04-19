@@ -110,7 +110,7 @@ def dag_d():
         
         
     @task
-    def transfrom(df_cube):
+    def transform(df_cube):
         df_final = df_cube[['event_date', 'gender', 'age', 'os', 'views', 'likes', 
                           'messages_received', 'messages_sent', 'users_received', 'users_sent']]\
             .groupby(['event_date', 'gender', 'age', 'os'])\
@@ -134,7 +134,7 @@ def dag_d():
     df_feed = extract_feed()
     df_message = extract_mes()
     df_cube = merge(df_feed, df_message)
-    df_efinal = transform(df_cube)
+    df_final = transform(df_cube)
     load(df_final)
 
 dag_d = dag_d()
