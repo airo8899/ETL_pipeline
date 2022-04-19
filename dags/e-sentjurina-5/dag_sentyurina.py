@@ -107,6 +107,7 @@ def dag_sentyurina():
             else: 
                 return 'female'
 
+        msg_and_feed['gender'] = mag_and_feed['gender'].apply(gender_category)
         df_gender = msg_and_feed.groupby('gender').agg({'event_date':'min', \
                             'likes':'sum', \
                             'views': 'sum', \
@@ -115,7 +116,6 @@ def dag_sentyurina():
                             'messages_sent':'sum', \
                             'users_sent':'sum'}).reset_index().copy()
         df_gender['metric'] = 'gender'
-        df_gender['gender'] = df_gender['gender'].apply(gender_category)
         df_gender.rename(columns={'gender':'metric_value'},inplace=True)
         return df_gender
     
@@ -134,6 +134,8 @@ def dag_sentyurina():
             else:
                 return '50+'
         
+        msg_and_feed['age'] = msg_and_feed['age'].apply(age_category)
+
         df_age = msg_and_feed.groupby('age').agg({'event_date':'min', \
                             'likes':'sum', \
                             'views': 'sum', \
@@ -142,7 +144,6 @@ def dag_sentyurina():
                             'messages_sent':'sum', \
                             'users_sent':'sum'}).reset_index().copy()
         df_age['metric'] = 'age'
-        df_age['age'] = df_age['age'].apply(age_category)
         df_age.rename(columns={'age':'metric_value'},inplace=True)
         return df_age
 
@@ -150,15 +151,17 @@ def dag_sentyurina():
     # агрегируем данные по платформе
     def transform_os(msg_and_feed):
         df_os = msg_and_feed.groupby('os').agg({'event_date':'min', \
-                            'likes':'sum', \
-                            'views': 'sum', \
-                            'messages_received':'sum', \
-                            'users_received':'sum', \
-                            'messages_sent':'sum', \
-                            'users_sent':'sum'}).reset_index().copy()
+                                    'likes':'sum', \
+                                    'views': 'sum', \
+                                    'messages_recieved':'sum', \
+                                    'users_received':'sum', \
+                                    'messages_sent':'sum', \
+                                    'users_sent':'sum'}).reset_index().copy()
         df_os['metric'] = 'os'
         df_os.rename(columns={'os':'metric_value'},inplace=True)
         return df_os
+        
+
     
     @task
     # соединяем полученные в ходе агрегаций датафреймы
