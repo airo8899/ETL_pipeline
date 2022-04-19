@@ -133,7 +133,7 @@ def dag_d():
 
     df_feed = extract_feed()
     df_message = extract_mes()
-    df_cube = merge(df_feed, df_mes)
+    df_cube = merge(df_feed, df_message)
     df_efinal = transform(df_cube)
     load(df_final)
 
