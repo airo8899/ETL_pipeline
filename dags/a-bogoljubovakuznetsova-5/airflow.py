@@ -1,16 +1,17 @@
 import os
 os.system('pip install pandahouse')
-
+os.system('pip install clickhouse-driver')
+import pandahouse
 from clickhouse_driver import Client
 from datetime import datetime, timedelta
 import pandas as pd
 from io import StringIO
-import pandahouse
 import requests
 
 from airflow.decorators import dag, task
 from airflow.operators.python import get_current_context
 
+#class for reading tables from CH
 class Getch:
     def __init__(self, query, db='simulator'):
         self.connection = {
@@ -31,6 +32,7 @@ class Getch:
             print("\033[31m {}".format(err))
             exit(0)
 
+#airflow settings
 default_args = {
     'owner': 'a-bogoljubovakuznetsova-5',
     'depends_on_past': False,
@@ -41,9 +43,8 @@ default_args = {
 
 schedule_interval = '0 9 * * *'
 
-#context = get_current_context()
-#date = context['ds']
-    
+
+#dag    
 @dag(default_args=default_args, schedule_interval=schedule_interval, catchup=False)
 def dag_bogoliubova():
 
@@ -119,12 +120,6 @@ def dag_bogoliubova():
 
     @task
     def load(df_final):
-        connection = {
-                        'host': 'https://clickhouse.lab.karpov.courses',
-                        'password': '656e2b0c9c',
-                        'user': 'student-rw',
-                        'database': 'test'
-        }
         if pandahouse.read_clickhouse('EXISTS TABLE test.bogoliubova_test', connection=connection)['result'][0] == 0:
             client = Client('clickhouse.lab.karpov.courses',
                 password='656e2b0c9c',
@@ -146,6 +141,12 @@ def dag_bogoliubova():
                 '''
             client.execute(q)
         else:
+            connection = {
+                        'host': 'https://clickhouse.lab.karpov.courses',
+                        'password': '656e2b0c9c',
+                        'user': 'student-rw',
+                        'database': 'test'
+            }
             if pandahouse.read_clickhouse("SELECT * FROM test.bogoliubova_test WHERE event_date = today() LIMIT 10", connection=connection)['event_date'].count() == 0:
                 pandahouse.to_clickhouse(df_final, 'bogoliubova_test', index=False, connection = connection)
 
