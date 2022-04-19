@@ -125,7 +125,7 @@ def dag_bogoliubova():
                         'user': 'student-rw',
                         'database': 'test'
         }
-        pandahouse.to_clickhouse(df_cube_final, 'bogoliubova_test', index=False, connection = connection)
+        pandahouse.to_clickhouse(df_final, 'bogoliubova_test', index=False, connection = connection)
 
 
     df_feed = extract_feed()
