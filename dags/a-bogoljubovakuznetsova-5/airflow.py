@@ -111,15 +111,20 @@ def dag_bogoliubova():
         df_cube.astype({'gender': 'UInt64', 'messages_received': 'UInt64', 'users_received' : 'UInt64'}).dtypes
         df_final = df_cube[['event_date', 'gender', 'age', 'os', 'views', 'likes', 
                           'messages_received', 'messages_sent', 'users_received', 'users_sent']]\
-            .groupby(['event_date', 'gender', 'age', 'os'])\
-            .sum()\
-            .reset_index()
+            .groupby(['event_date', 'gender', 'age', 'os'], as_index=Flase)\
+            .sum()
         
         return df_final
 
 
     @task
     def load(df_final):
+        connection = {
+                        'host': 'https://clickhouse.lab.karpov.courses',
+                        'password': '656e2b0c9c',
+                        'user': 'student-rw',
+                        'database': 'test'
+        }
         if pandahouse.read_clickhouse('EXISTS TABLE test.bogoliubova_test', connection=connection)['result'][0] == 0:
             client = Client('clickhouse.lab.karpov.courses',
                 password='656e2b0c9c',
@@ -127,7 +132,7 @@ def dag_bogoliubova():
                 database='test')
             q = '''CREATE TABLE IF NOT EXISTS test.bogoliubova_test
                 (       
-                    event_date DateTime,
+                    event_date Date,
                     gender UInt64,
                     age String,
                     os String,
@@ -140,15 +145,9 @@ def dag_bogoliubova():
                 ) ENGINE = Log()
                 '''
             client.execute(q)
-        else:
-            connection = {
-                        'host': 'https://clickhouse.lab.karpov.courses',
-                        'password': '656e2b0c9c',
-                        'user': 'student-rw',
-                        'database': 'test'
-            }
-            if pandahouse.read_clickhouse("SELECT * FROM test.bogoliubova_test WHERE event_date = today() LIMIT 10", connection=connection)['event_date'].count() == 0:
-                pandahouse.to_clickhouse(df_final, 'bogoliubova_test', index=False, connection = connection)
+
+        if pandahouse.read_clickhouse("SELECT * FROM test.bogoliubova_test WHERE event_date = today() LIMIT 10", connection=connection)['event_date'].count() == 0:
+            pandahouse.to_clickhouse(df_final, 'bogoliubova_test', index=False, connection = connection)
 
 
     df_feed = extract_feed()
