@@ -186,8 +186,9 @@ def dag_sentyurina():
     
     @task
     def load(fina_tablel):
+        ph.to_clickhouse(df=final_table, table='sentyurina', index=False, \
+                         connection = connect)
 
-        ph.to_clickhouse(df=final_table, table='sentyurina', index=False, connection = connect)
 
     feed = extract_feed()
     msg = extract_msg()
@@ -195,8 +196,8 @@ def dag_sentyurina():
     gender = transform_gender(feed_msg)
     age = transform_age(feed_msg)
     os = transform_os(feed_msg)
-    final = df_concat(gender, age, os)
-    load(final)
+    final_table = df_concat(gender, age, os)
+    load(final_table)
     
 dag_sentyurina = dag_sentyurina()
 
