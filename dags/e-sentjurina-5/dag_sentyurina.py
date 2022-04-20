@@ -169,27 +169,19 @@ def dag_sentyurina():
     @task
     # соединяем полученные в ходе агрегаций датафреймы
     def df_concat(df_gender, df_age, df_os):
-
-        final_table = pd.concat([df_gender, df_age, df_os])
-
+        concat_table = pd.concat([df_gender, df_age, df_os])
         new_cols = ['event_date',
-                'metric',
-                'metric_value',
-                'views',
-                'likes',
-                'messages_received',
-                'messages_sent',
-                'users_received',
-                'users_sent']  
+                    'metric',
+                    'metric_value',
+                    'views',
+                    'likes',
+                    'messages_recieved',
+                    'messages_sent',
+                    'users_received',
+                    'users_sent']  
 
-        final_table = final_table.loc[:, new_cols]
-        final_table = final_table.reset_index().drop(columns='index')
-        final_table = final_table.astype({'views':'int', \
-                   'likes':'int', \
-                   'messages_received':'int', \
-                   'messages_sent':'int', \
-                   'users_received':'int', \
-                   'users_sent':'int'})              
+        final_table = concat_table.loc[:, new_cols]
+        final_table = final_table.reset_index().drop('index', axis =1)
         return final_table
     
     @task
