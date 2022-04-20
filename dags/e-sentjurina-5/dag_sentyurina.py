@@ -183,7 +183,13 @@ def dag_sentyurina():
         final_table = concat_table.loc[:, new_cols]
         final_table = final_table.reset_index().drop('index', axis =1)
         final_table['event_date'] = final_table['event_date'].apply(lambda x: datetime.isoformat(x))
-
+        final_table = final_table.astype({
+                       'views':'int', \
+                       'likes':'int', \
+                       'messages_recieved':'int', \
+                       'messages_sent':'int', \
+                       'users_received':'int', \
+                       'users_sent':'int'})  
         return final_table
     
     @task
