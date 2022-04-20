@@ -108,12 +108,12 @@ def dag_bogoliubova():
         
     @task
     def transform(df_cube):
-        df_cube.astype({'gender': 'UInt64', 'messages_received': 'UInt64', 'users_received' : 'UInt64'}).dtypes
         df_final = df_cube[['event_date', 'gender', 'age', 'os', 'views', 'likes', 
                           'messages_received', 'messages_sent', 'users_received', 'users_sent']]\
             .groupby(['event_date', 'gender', 'age', 'os'], as_index=Flase)\
             .sum()
-        
+        df_final[['likes', 'views', 'messages_sent', 'users_sent', 'messages_received', 'users_received']] = \
+            df_final[['likes', 'views', 'messages_sent', 'users_sent', 'messages_received', 'users_received']].astype(int)
         return df_final
 
 
@@ -147,7 +147,7 @@ def dag_bogoliubova():
             client.execute(q)
 
         if pandahouse.read_clickhouse("SELECT * FROM test.bogoliubova_test WHERE event_date = today() LIMIT 10", connection=connection)['event_date'].count() == 0:
-            pandahouse.to_clickhouse(df_final, 'bogoliubova_test', index=False, connection = connection)
+            pandahouse.to_clickhouse(df=df_final, table='bogoliubova_test', index=False, connection=connection)
 
 
     df_feed = extract_feed()
