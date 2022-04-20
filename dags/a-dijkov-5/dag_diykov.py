@@ -38,7 +38,7 @@ default_args = {
 schedule_interval = '0 15 * * *'
 
 @dag(default_args=default_args, schedule_interval=schedule_interval, catchup=False)
-def dag_etl():
+def dag_etl_diykov():
     
     @task
     def extract_feed():
@@ -156,4 +156,4 @@ def dag_etl():
 
     
     
-dag_etl = dag_etl()
+dag_etl_diykov = dag_etl_diykov()
