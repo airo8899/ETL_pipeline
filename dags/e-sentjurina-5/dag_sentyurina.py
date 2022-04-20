@@ -185,7 +185,7 @@ def dag_sentyurina():
         return final_table
     
     @task
-    def load(fina_table):
+    def load(final_table):
         ph.to_clickhouse(df=final_table, table='sentyurina', index=False, \
                          connection = connect)
 
