@@ -67,7 +67,7 @@ def dag_sentyurina():
                                 user_id,
                                 messages_sent,
                                 users_sent,
-                                messages_recieved,
+                                messages_received,
                                 users_received
                     FROM
                         (SELECT toDate(time) event_date,  
@@ -79,7 +79,7 @@ def dag_sentyurina():
                             GROUP BY user_id, event_date) t1
                         JOIN
                         (SELECT toDate(time) event_date, reciever_id, 
-                                count() messages_recieved,
+                                count() messages_received,
                                 count(distinct user_id) users_received
                             FROM simulator_20220320.message_actions
                             WHERE event_date = today() - 1
@@ -112,7 +112,7 @@ def dag_sentyurina():
         df_gender = msg_and_feed.groupby('gender').agg({'event_date':'min', \
                                     'likes':'sum', \
                                     'views': 'sum', \
-                                    'messages_recieved':'sum', \
+                                    'messages_received':'sum', \
                                     'users_received':'sum', \
                                     'messages_sent':'sum', \
                                     'users_sent':'sum'}).reset_index().copy()
@@ -141,7 +141,7 @@ def dag_sentyurina():
         df_age = msg_and_feed.groupby('age').agg({'event_date':'min', \
                                     'likes':'sum', \
                                     'views': 'sum', \
-                                    'messages_recieved':'sum', \
+                                    'messages_received':'sum', \
                                     'users_received':'sum', \
                                     'messages_sent':'sum', \
                                     'users_sent':'sum'}).reset_index().copy()
@@ -156,7 +156,7 @@ def dag_sentyurina():
         df_os = msg_and_feed.groupby('os').agg({'event_date':'min', \
                                     'likes':'sum', \
                                     'views': 'sum', \
-                                    'messages_recieved':'sum', \
+                                    'messages_received':'sum', \
                                     'users_received':'sum', \
                                     'messages_sent':'sum', \
                                     'users_sent':'sum'}).reset_index().copy()
@@ -175,7 +175,7 @@ def dag_sentyurina():
                     'metric_value',
                     'views',
                     'likes',
-                    'messages_recieved',
+                    'messages_received',
                     'messages_sent',
                     'users_received',
                     'users_sent']  
