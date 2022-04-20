@@ -146,7 +146,7 @@ def dag_bogoliubova():
                 '''
             client.execute(q)
 
-        if pandahouse.read_clickhouse("SELECT * FROM test.bogoliubova_test WHERE event_date = today() LIMIT 10", connection=connection)['event_date'].count() == 0:
+        if pandahouse.read_clickhouse("SELECT * FROM test.bogoliubova_test WHERE event_date = today()-1 LIMIT 10", connection=connection)['event_date'].count() == 0:
             pandahouse.to_clickhouse(df=df_final, table='bogoliubova_test', index=False, connection=connection)
 
 
