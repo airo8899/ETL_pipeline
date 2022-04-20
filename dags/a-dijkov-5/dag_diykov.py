@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from airflow.decorators import dag, task
 import os
 
-# os.system("pip install pandahouse")
+os.system("pip install pandahouse")
 
 
 connection = {
