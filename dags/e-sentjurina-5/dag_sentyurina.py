@@ -175,7 +175,7 @@ def dag_sentyurina():
                     'metric_value',
                     'views',
                     'likes',
-                    'messages_received',
+                    'messages_recieved',
                     'messages_sent',
                     'users_received',
                     'users_sent']  
