@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from airflow.decorators import dag, task
 import os
 
-os.system("pip install pandahouse")
+# os.system("pip install pandahouse")
 
 
 connection = {
@@ -144,16 +144,76 @@ def dag_etl_diykov():
 
         pandahouse.to_clickhouse(df=multigroup, table='diykov_v1', connection=connection_upload, index=False)
 
+    
+    
+    
+    def group(df, metric):
+        df_group = df.groupby(metric)[['likes', 'views', 'messages_sent', 'users_sent', 'messages_received', 'users_received']].sum().reset_index()
+        df_group.insert(0, 'metric', f'{metric}')
+        df_group.insert(0, 'event_date', df['event_date'][0])
+        df_group.columns = ['event_date', 'metric', 'metric_value', 'likes', 'views', 'messages_sent',
+               'users_sent', 'messages_received', 'users_received']
+        return df_group
 
+
+    @task
+    def transform_gender(df):
+        df_gender = group(df, 'gender')
+        return df_gender
+      
+    @task    
+    def transform_os(df):
+        df_os = group(df, 'os')
+        return df_os
+    
+    @task
+    def transform_age(df):
+        df_age = group(df, 'age')
+        return df_age
+        
+    @task    
+    def concat_df(df_gender, df_os, df_age):
+        separategroup = pd.concat([df_gender, df_os, df_age])
+        separategroup[['likes', 'views', 'messages_sent', 'users_sent', 'messages_received', 'users_received']] = \
+                separategroup[['likes', 'views', 'messages_sent', 'users_sent', 'messages_received', 'users_received']].astype(int)
+        return separategroup
+        
+    
+    @task
+    def load_to_test2(df):
+        q = '''
+                CREATE TABLE IF NOT EXISTS test.diykov_v2
+                (   event_date Date,
+                    metric String,
+                    metric_value String,
+                    likes UInt64,
+                    views UInt64,
+                    messages_sent UInt64,
+                    users_sent UInt64,
+                    messages_received UInt64,
+                    users_received UInt64
+                ) ENGINE = Log()'''
+
+        pandahouse.execute(connection=connection_upload, query=q)
+        
+        pandahouse.to_clickhouse(df=separategroup, table='diykov_v2', connection=connection_upload, index=False)
+        
+        
+        
 
     feed_df = extract_feed()
     message_df = extract_message()
     df = merge_df(feed_df, message_df)
+    
     multigroup = transform_miltigroup(df)
-
     print(multigroup)
     load_to_test1(multigroup)
 
-    
-    
+    df_gender = transform_gender(df)
+    df_os = transform_os(df)
+    df_age = transform_age(df)
+    separategroup = concat_df(df_gender, df_os, df_age)
+    print(separategroup)
+    load_to_test2(separategroup)
+   
 dag_etl_diykov = dag_etl_diykov()
