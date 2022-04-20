@@ -182,11 +182,13 @@ def dag_sentyurina():
 
         final_table = concat_table.loc[:, new_cols]
         final_table = final_table.reset_index().drop('index', axis =1)
+        final_table['event_date'] = final_table['event_date'].apply(lambda x: datetime.isoformat(x))
+
         return final_table
     
     @task
     def load(final_table):
-        ph.to_clickhouse(df=final_table, table='sentyurina', index=False, \
+        ph.to_clickhouse(df=final_table, table='e_sentyurina', index=False, \
                          connection = connect)
 
 
