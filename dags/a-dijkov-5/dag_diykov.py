@@ -35,7 +35,7 @@ default_args = {
 }
 
 
-schedule_interval = '* 15 * * *'
+schedule_interval = '0 15 * * *'
 
 @dag(default_args=default_args, schedule_interval=schedule_interval, catchup=False)
 def dag_etl():
