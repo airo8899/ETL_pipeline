@@ -186,7 +186,7 @@ def dag_sentyurina():
     
     @task
     def load(final_table):
-        ph.to_clickhouse(df=final_table, table='e_sentyurina', index=False, \
+        ph.to_clickhouse(df=final_table, table='esentyurina', index=False, \
                          connection = connect)
 
 
