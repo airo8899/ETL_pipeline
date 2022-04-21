@@ -4,33 +4,33 @@ from datetime import datetime, timedelta
 import pandas as pd
 from io import StringIO
 import requests
+import pandahouse as ph
 
 from airflow.decorators import dag, task
 from airflow.operators.python import get_current_context
 
+class Getch:
+    def __init__(self, query, db='simulator_20220320'):
+        self.connection = {
+            'host': 'https://clickhouse.lab.karpov.courses',
+            'password': 'dpo_python_2020',
+            'user': 'student',
+            'database': db,
+        }
+        self.query = query
+        self.getchdf
 
-# Функция для CH
-def ch_get_df(query='Select 1', host='https://clickhouse.lab.karpov.courses', user='student', password='dpo_python_2020'):
-    r = requests.post(host, data=query.encode("utf-8"), auth=(user, password), verify=False)
-    result = pd.read_csv(StringIO(r.text), sep='\t')
-    return result
+    @property
+    def getchdf(self):
+        try:
+            self.df = ph.read_clickhouse(self.query, connection=self.connection)
+
+        except Exception as err:
+            print("\033[31m {}".format(err))
+            exit(0)
 
 
-query = """SELECT 
-               toDate(time) as event_date, 
-               country, 
-               source,
-               count() as likes
-            FROM 
-                simulator.feed_actions 
-            where 
-                toDate(time) = '2022-01-26' 
-                and action = 'like'
-            group by
-                event_date,
-                country,
-                source
-            format TSVWithNames"""
+
 
 # Дефолтные параметры, которые прокидываются в таски
 default_args = {
@@ -38,63 +38,50 @@ default_args = {
     'depends_on_past': False,
     'retries': 2,
     'retry_delay': timedelta(minutes=5),
-    'start_date': datetime(2022, 3, 10),
+    'start_date': datetime(2022, 3, 20),
 }
 
 # Интервал запуска DAG
 schedule_interval = '0 23 * * *'
 
 @dag(default_args=default_args, schedule_interval=schedule_interval, catchup=False)
-def dag_sim_example():
-
-    @task()
-    def extract():
-        query = """SELECT 
-                       toDate(time) as event_date, 
-                       country, 
-                       source,
-                       count() as likes
-                    FROM 
-                        simulator.feed_actions 
-                    where 
-                        toDate(time) = '2022-01-26' 
-                        and action = 'like'
-                    group by
-                        event_date,
-                        country,
-                        source
-                    format TSVWithNames"""
-        df_cube = ch_get_df(query=query)
-        return df_cube
+def etl_oleg():
+    @task
+    def extract_feed():
+        query_feed = Getch ("""SELECT user_id AS id,
+               toDate(time) AS event_date,gender,age,os,countIf(action='like') AS likes,countIf(action='view') AS views
+        FROM simulator_20220320.feed_actions
+        WHERE event_date = today() - 1
+        GROUP BY id,event_date,gender,age,os
+        """).df
+        return(query_feed)
 
     @task
-    def transfrom_source(df_cube):
-        df_cube_source = df_cube[['event_date', 'source', 'likes']]\
-            .groupby(['event_date', 'source'])\
-            .sum()\
-            .reset_index()
-        return df_cube_source
+    def extract_message():   
+        query_message = Getch ("""
+        select user,event_date,gender,age,os,messages_received,messages_sent,users_received,users_sent
+        from
+        
+        (select reciever_id as user,toDate(time) as event_date, count(reciever_id) as messages_received, count(distinct user_id) as users_received
+        FROM simulator_20220320.message_actions
+        WHERE toDate(time) = today() - 1
+        group by user, event_date
+        ) t1
 
-    @task
-    def transfrom_countries(df_cube):
-        df_cube_country = df_cube[['event_date', 'country', 'likes']]\
-            .groupby(['event_date', 'country'])\
-            .sum()\
-            .reset_index()
-        return df_cube_country
+        full outer join
 
-    @task
-    def load(df_cube_source, df_cube_country):
-        context = get_current_context()
-        ds = context['ds']
-        print(f'Likes per source for {ds}')
-        print(df_cube_source.to_csv(index=False, sep='\t'))
-        print(f'Likes per country for {ds}')
-        print(df_cube_country.to_csv(index=False, sep='\t'))
+        (select user_id as user,toDate(time) as event_date, count(user_id) as messages_sent, count(distinct reciever_id) as users_sent,gender,age,os,source
+        FROM simulator_20220320.message_actions
+        WHERE toDate(time) = today() - 1
+        group by user, event_date,gender,age,os,source
+        ) t2
 
-    df_cube = extract()
-    df_cube_source = transfrom_source(df_cube)
-    df_cube_country = transfrom_countries(df_cube)
-    load(df_cube_source, df_cube_country)
+        on t1.user = t2.user and t1.event_date = t2.event_date
+       """).df
+        return(query_message)
+        
+    feed_data = extract_feed()
+    message_data = extract_message()
+    
 
-dag_sim_example = dag_sim_example()
+etl_oleg = etl_oleg()
