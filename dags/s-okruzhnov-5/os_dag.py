@@ -1,3 +1,7 @@
+from pip._internal import main as pipmain
+pipmain(['install', 'pandahouse'])
+import pandahouse
+import pandahouse
 from datetime import datetime, timedelta
 import pandas as pd
 import requests
@@ -8,7 +12,6 @@ from airflow.decorators import dag, task
 from airflow.operators.python import get_current_context
 
 from pip._internal import main as pipmain
-pipmain(['install', 'pandahouse'])
 
 def ch_get_df(query, host='https://clickhouse.lab.karpov.courses', user='student', password='dpo_python_2020'):
     r = requests.post(host, data=query.encode("utf-8"), auth=(user, password), verify=False)
@@ -16,22 +19,24 @@ def ch_get_df(query, host='https://clickhouse.lab.karpov.courses', user='student
     return result
 
 default_args = {
-    'owner': 'sokruzhnov',
+    'owner': 's-okruzhnov-5',
     'depends_on_past': False,
     'retries': 2,
-    'retry_delay': timedelta(minutes=5),
+    'retry_delay': timedelta(minutes=2),
     'start_date': datetime(2022, 4, 11),
 }
 
-schedule_interval = '0 23 * * *'
+schedule_interval = '0 9 * * *'
 
 @dag(default_args=default_args, schedule_interval=schedule_interval, catchup=False)
 def dag_etl():
     feed_query = """SELECT toDate(time) event_date,
                            user_id,
-                           age,
+                           multiIf(age <= 17, 'до 18', age > 17
+                           and age <= 30, '18-30', age > 30
+                           and age <= 50, '31-50', '50+') as age,
                            os,
-                           gender,
+                           If(gender == 0, 'female', 'male') as gender,
                            sum(action = 'like') likes,
                            sum(action = 'view') views
                     FROM simulator_20220320.feed_actions
@@ -96,11 +101,12 @@ def dag_etl():
         print(df.to_csv(index=False, sep='\t'))
         connection = {
                         'host': 'https://clickhouse.lab.karpov.courses',
-                        'password': 'dpo_python_2020',
-                        'user': 'student',
+                        'password': '656e2b0c9c',
+                        'user': 'student-rw',
                         'database': 'test'
         }
-        pandahouse.to_clickhouse(df, 'sokruzhnov_test', connection=connection)
+
+        pandahouse.to_clickhouse(df, 'okruzhnov_test', index=False, connection = connection)
         
         
     feed = extract_data(feed_query)

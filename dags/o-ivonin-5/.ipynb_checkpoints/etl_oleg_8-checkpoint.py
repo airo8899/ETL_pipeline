@@ -33,6 +33,7 @@ class Getch:
 
 
 # Дефолтные параметры, которые прокидываются в таски
+#ff
 default_args = {
     'owner': 'o-ivonin-5',
     'depends_on_past': False,
@@ -57,7 +58,7 @@ def etl_oleg():
         GROUP BY id,event_date,gender,age,os
         """).df
         return(query_feed)
-
+    #загрузка данных
     @task
     def extract_message():   
         query_message = Getch ("""

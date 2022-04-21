@@ -146,15 +146,15 @@ def dag_etl_goncharov():
 
 
     @task()
-    def group_os(df_merge):
+    def group_os(merged_df1):
 
-        df_os = df_merge.groupby('os').agg({'event_date':'min', \
-                                'likes':'sum', \
-                                'views': 'sum', \
-                                'messages_received':'sum', \
-                                'users_received':'sum', \
-                                'messages_sent':'sum', \
-                                'users_sent':'sum'}).reset_index().copy()
+        df_os = merged_df1.groupby('os').agg({'event_date':'min', \
+                            'likes':'sum', \
+                            'views': 'sum', \
+                            'messages_received':'sum', \
+                            'users_received':'sum', \
+                            'messages_sent':'sum', \
+                            'users_sent':'sum'}).reset_index().copy()
         df_os['metric'] = 'os'
         df_os.rename(columns={'os':'metric_value'},inplace=True)
 
@@ -162,30 +162,30 @@ def dag_etl_goncharov():
 
 
     @task()
-    def group_gender(df_merge):
+    def group_gender(merged_df2):
 
-        df_gender = df_merge.groupby('gender').agg({'event_date':'min', \
-                                'likes':'sum', \
-                                'views': 'sum', \
-                                'messages_received':'sum', \
-                                'users_received':'sum', \
-                                'messages_sent':'sum', \
-                                'users_sent':'sum'}).reset_index().copy()
+        df_gender = merged_df2.groupby('gender').agg({'event_date':'min', \
+                            'likes':'sum', \
+                            'views': 'sum', \
+                            'messages_received':'sum', \
+                            'users_received':'sum', \
+                            'messages_sent':'sum', \
+                            'users_sent':'sum'}).reset_index().copy()
         df_gender['metric'] = 'gender'
         df_gender.rename(columns={'gender':'metric_value'},inplace=True)
 
         return df_gender
 
     @task()
-    def group_age(df_merge):
+    def group_age(merged_df3):
 
-        df_age = df_merge.groupby('age').agg({'event_date':'min', \
-                                'likes':'sum', \
-                                'views': 'sum', \
-                                'messages_received':'sum', \
-                                'users_received':'sum', \
-                                'messages_sent':'sum', \
-                                'users_sent':'sum'}).reset_index().copy()
+        df_age = merged_df3.groupby('age').agg({'event_date':'min', \
+                            'likes':'sum', \
+                            'views': 'sum', \
+                            'messages_received':'sum', \
+                            'users_received':'sum', \
+                            'messages_sent':'sum', \
+                            'users_sent':'sum'}).reset_index().copy()
         df_age['metric'] = 'age'
         df_age.rename(columns={'age':'metric_value'},inplace=True)
 
@@ -227,10 +227,10 @@ def dag_etl_goncharov():
     extracted_feed = extract_feed()
     final_feed = transform_feed(extracted_feed)
     feed_msg_merged = feed_msg_merge(final_feed, final_msg)
-    grouped_os = group_os(feed_msg_merged)
-    grouped_gender = group_gender(feed_msg_merged)
-    grouped_age = group_age(feed_msg_merged)
-    concat_res = concat(grouped_age, grouped_os, grouped_gender)
-    loading = load(concat_res) 
+    os_df = group_os(feed_msg_merged)
+    gender_df = group_gender(feed_msg_merged)
+    age_df = group_age(feed_msg_merged)
+    concat_res = concat(age_df, os_df, gender_df)
+    load(concat_res) 
     
-dag_etl_goncharov = dag_etl_goncharov()    
+dag_etl_goncharov = dag_etl_goncharov() 
