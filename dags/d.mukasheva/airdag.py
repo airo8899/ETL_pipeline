@@ -116,7 +116,7 @@ def dag_dina():
     
     @task
     def load(df_fin):
-        ph.to_clickhouse(df=df_fin, table='d.mukasheva', index=False, \
+        pandahouse.to_clickhouse(df=df_fin, table='d_mukasheva', index=False, \
                          connection = connection2)
        
     df_feed = feed()
