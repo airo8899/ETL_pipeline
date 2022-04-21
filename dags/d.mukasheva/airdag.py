@@ -13,6 +13,8 @@ connection = {
     'database': 'simulator'
 }
 
+
+
 def querry(q):
     df = pandahouse.read_clickhouse(q, connection=connection)
     return df
@@ -70,7 +72,6 @@ def dag_sim_dina():
         select 
         toDate(time) as event_date,
         reciever_id as user,
-
         count(distinct user_id) as received_users,
         count(user_id) as received_messages
         from simulator_20220320.message_actions
@@ -120,4 +121,4 @@ def dag_sim_dina():
     df=merge(df_feed, df_messages)
     df_fin=fintable(df)
 
-dag_sim_dina = dag_sim_dina()
+dag_sim_din = dag_sim_dina()
