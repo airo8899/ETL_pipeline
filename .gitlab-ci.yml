@@ -7,7 +7,7 @@ stages:
 update_job:
     stage: run
     script:
-        - python airflow_nodags.py
+        - python dags/a-bogoljubovakuznetsova-5/airflow_nodag.py
     only:
         refs:
             - schedules
