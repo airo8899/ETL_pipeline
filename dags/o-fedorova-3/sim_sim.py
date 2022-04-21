@@ -38,10 +38,10 @@ default_args = {
 }
 
 # Интервал запуска DAG
-schedule_interval = '0 23 * * *'
+schedule_interval = '30 14 * * *'
 
 @dag(default_args=default_args, schedule_interval=schedule_interval, catchup=False)
-def dag_sim_example():
+def dag_etl_ofedorova():
     
     @task()
     def extract():
@@ -65,4 +65,4 @@ def dag_sim_example():
     
     df_cube = extract()
     
-dag_ofedorova = dag_sim_example()
+dag_etl_ofedorova = dag_etl_ofedorova()
