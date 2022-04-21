@@ -115,7 +115,6 @@ def dag_sim_dina():
         print(f'Likes per source for {ds}')
         print(df_fin.to_csv(index=False, sep='\t'))
        
-
     df_feed = feed()
     df_messages=messages()
     df=merge(df_feed, df_messages)
