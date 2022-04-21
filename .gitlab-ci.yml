@@ -1,4 +1,15 @@
-check:
-  only:
-    - merge_requests
-  script: "exit 0"
+image: cr.yandex/crp742p3qacifd2hcon2/practice-da:latest
+
+stages:
+- init
+- run
+
+update_job:
+    stage: run
+    script:
+        - python airflow_nodags.py
+    only:
+        refs:
+            - schedules
+        variables:
+            - $SCHEDULE_TYPE == "RUN_UPDATE_B"
