@@ -113,12 +113,12 @@ def etl_oleg():
                                     'users_sent':'sum'}).reset_index().copy()
 
         df_gender['metric'] = 'gender'
-        df_gender.rename(columns={'gender':'metric_value'},inplace=True)
+        df_gender.rename(columns={'gender':'value'},inplace=True)
         return df_gender
     
     @task
     #age table
-     def transform_age(msg_and_feed): 
+    def transform_age(msg_and_feed): 
         
         # преобразуем возраст в категории
         def age_category(x):
@@ -142,7 +142,7 @@ def etl_oleg():
                                     'users_sent':'sum'}).reset_index().copy()
 
         df_age['metric'] = 'age'
-        df_age.rename(columns={'age':'metric_value'},inplace=True)
+        df_age.rename(columns={'age':'value'},inplace=True)
         return df_age
     @task
     #os table
@@ -155,14 +155,14 @@ def etl_oleg():
                                     'messages_sent':'sum', \
                                     'users_sent':'sum'}).reset_index().copy()
         df_os['metric'] = 'os'
-        df_os.rename(columns={'os':'metric_value'},inplace=True)
+        df_os.rename(columns={'os':'value'},inplace=True)
         return df_os
     @task
-     def df_concat(df_gender, df_age, df_os):
+    def df_concat(df_gender, df_age, df_os):
         concat_table = pd.concat([df_gender, df_age, df_os])
         new_cols = ['event_date',
                     'metric',
-                    'metric_value',
+                    'value',
                     'views',
                     'likes',
                     'messages_received',
@@ -175,7 +175,7 @@ def etl_oleg():
         final_table['event_date'] = final_table['event_date'].apply(lambda x: datetime.isoformat(x))
         final_table = final_table.astype({
                         'metric':'str',
-                        'metric_value':'str',  
+                        'value':'str',  
                         'views':'int', \
                         'likes':'int', \
                         'messages_received':'int', \
