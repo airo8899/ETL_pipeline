@@ -1,4 +1,4 @@
-# coding=utf-8
+#coding=utf-8
 
 from datetime import datetime, timedelta
 import pandas as pd
@@ -32,9 +32,9 @@ class Getch:
 
 
 
-# Дефолтные параметры, которые прокидываются в таски
+# Дефолтные параметры, которые прокидываются в таски qawedawdawda
 default_args = {
-    'owner': 'a.batalov',
+    'owner': 'o-ivonin-5',
     'depends_on_past': False,
     'retries': 2,
     'retry_delay': timedelta(minutes=5),
@@ -46,6 +46,8 @@ schedule_interval = '0 23 * * *'
 
 @dag(default_args=default_args, schedule_interval=schedule_interval, catchup=False)
 def etl_oleg():
+    
+    #загрузка данных
     @task
     def extract_feed():
         query_feed = Getch ("""SELECT user_id AS id,
@@ -55,7 +57,7 @@ def etl_oleg():
         GROUP BY id,event_date,gender,age,os
         """).df
         return(query_feed)
-
+    #загрузка данных
     @task
     def extract_message():   
         query_message = Getch ("""
