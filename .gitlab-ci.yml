@@ -1,15 +1,4 @@
-image: cr.yandex/crp742p3qacifd2hcon2/practice-da:latest
-
-stages:
-- init
-- run
-
-update_job:
-    stage: run
-    script:
-        - python dags/a-bogoljubovakuznetsova-5/airflow_nodag.py
-    only:
-        refs:
-            - schedules
-        variables:
-            - $SCHEDULE_TYPE == "RUN_UPDATE_B"
+check:
+  only:
+    - merge_requests
+  script: "exit 0"
