@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 from io import StringIO
 import requests
+import pandahouse
 
 from airflow.decorators import dag, task
 from airflow.operators.python import get_current_context
@@ -13,7 +14,11 @@ connection = {
     'database': 'simulator'
 }
 
-
+connection2 = {
+    'host': 'https://clickhouse.lab.karpov.courses',
+    'password': '656e2b0c9c',
+    'user': 'student-rw',
+    'database': 'test'}
 
 def querry(q):
     df = pandahouse.read_clickhouse(q, connection=connection)
@@ -111,10 +116,8 @@ def dag_dina():
     
     @task
     def load(df_fin):
-        context = get_current_context()
-        ds = context['ds']
-        print(f'Likes per source for {ds}')
-        print(df_fin.to_csv(index=False, sep='\t'))
+        ph.to_clickhouse(df=df_fin, table='d.mukasheva', index=False, \
+                         connection = connection2)
        
     df_feed = feed()
     df_messages=messages()
