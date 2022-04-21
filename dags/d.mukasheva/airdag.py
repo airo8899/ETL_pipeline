@@ -25,14 +25,14 @@ default_args = {
     'depends_on_past': False,
     'retries': 2,
     'retry_delay': timedelta(minutes=5),
-    'start_date': datetime(2022, 3, 10),
+    'start_date': datetime(2022, 4, 10),
 }
 
 # Интервал запуска DAG
 schedule_interval = '0 23 * * *'
 
 @dag(default_args=default_args, schedule_interval=schedule_interval, catchup=False)
-def dag_sim_dina():
+def dag_dina():
 
     @task()
     def feed():
