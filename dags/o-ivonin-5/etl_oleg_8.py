@@ -33,7 +33,7 @@ class Getch:
 
 
 # Дефолтные параметры, которые прокидываются в таски
-#ff
+#1
 default_args = {
     'owner': 'o-ivonin-5',
     'depends_on_past': False,
