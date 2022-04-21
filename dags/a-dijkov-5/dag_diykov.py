@@ -196,7 +196,7 @@ def dag_etl_diykov():
 
         pandahouse.execute(connection=connection_upload, query=q)
         
-        pandahouse.to_clickhouse(df=separategroup, table='diykov_v2', connection=connection_upload, index=False)
+        pandahouse.to_clickhouse(df=df, table='diykov_v2', connection=connection_upload, index=False)
         
         
         
