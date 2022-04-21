@@ -123,5 +123,6 @@ def dag_dina():
     df_messages=messages()
     df=merge(df_feed, df_messages)
     df_fin=fintable(df)
+    load(df_fin)
 
 dag_dina = dag_dina()
