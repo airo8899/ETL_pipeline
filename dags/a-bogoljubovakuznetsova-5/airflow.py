@@ -110,7 +110,7 @@ def dag_bogoliubova():
     def transform(df_cube):
         df_final = df_cube[['event_date', 'gender', 'age', 'os', 'views', 'likes', 
                           'messages_received', 'messages_sent', 'users_received', 'users_sent']]\
-            .groupby(['event_date', 'gender', 'age', 'os'], as_index=Flase)\
+            .groupby(['event_date', 'gender', 'age', 'os'], as_index=False)\
             .sum()
         df_final[['likes', 'views', 'messages_sent', 'users_sent', 'messages_received', 'users_received']] = \
             df_final[['likes', 'views', 'messages_sent', 'users_sent', 'messages_received', 'users_received']].astype(int)
