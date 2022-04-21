@@ -32,13 +32,13 @@ def select(q):
 default_args = {
     'owner': 'a-dijkov-5',
     'depends_on_past': False,
-    'retries': 2,
-    'retry_delay': timedelta(minutes=5),
+    'retries': 22,
+    'retry_delay': timedelta(minutes=55),
     'start_date': datetime(2022, 4, 20),
 }
 
 # настройки планиривощка
-schedule_interval = '0 15 * * *'
+schedule_interval = '0 0 * * *'
 
 
 @dag(default_args=default_args, schedule_interval=schedule_interval, catchup=False)
