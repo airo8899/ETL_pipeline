@@ -116,6 +116,21 @@ def dag_dina():
     
     @task
     def load(df_fin):
+        q = '''
+                CREATE TABLE IF NOT EXISTS test.d_mukasheva
+                (   event_date Date,
+                    gender String,
+                    age String,
+                    os String,
+                    views UInt64,
+                    likes UInt64,
+                    received_messages UInt64,
+                    sent_messages UInt64,
+                    received_users UInt64,
+                    sent_users UInt64
+                ) ENGINE = Log()'''
+
+        pandahouse.execute(connection=connection2, query=q)
         pandahouse.to_clickhouse(df=df_fin, table='d_mukasheva', index=False, \
                          connection = connection2)
        
