@@ -57,7 +57,7 @@ def etl_oleg():
         GROUP BY id,event_date,gender,age,os
         """).df
         return(query_feed)
-
+    #загрузка данных
     @task
     def extract_message():   
         query_message = Getch ("""
