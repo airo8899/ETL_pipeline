@@ -32,7 +32,7 @@ default_args = {
 schedule_interval = '0 23 * * *'
 
 @dag(default_args=default_args, schedule_interval=schedule_interval, catchup=False)
-def dag_sim_dina():
+def dag_dina():
 
     @task()
     def feed():
