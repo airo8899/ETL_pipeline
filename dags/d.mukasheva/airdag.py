@@ -121,4 +121,4 @@ def dag_sim_dina():
     df=merge(df_feed, df_messages)
     df_fin=fintable(df)
 
-dag_sim_din = dag_sim_dina()
+dag_dina = dag_dina()
