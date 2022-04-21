@@ -1,4 +1,4 @@
-# coding=utf-8
+#coding=utf-8
 
 from datetime import datetime, timedelta
 import pandas as pd
@@ -33,7 +33,6 @@ class Getch:
 
 
 # Дефолтные параметры, которые прокидываются в таски
-#123
 default_args = {
     'owner': 'o-ivonin-5',
     'depends_on_past': False,
