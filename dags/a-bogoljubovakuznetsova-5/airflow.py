@@ -124,28 +124,22 @@ def dag_bogoliubova():
                         'password': '656e2b0c9c',
                         'user': 'student-rw',
                         'database': 'test'
-        }
-        if pandahouse.read_clickhouse('EXISTS TABLE test.bogoliubova_test', connection=connection)['result'][0] == 0:
-            client = Client('clickhouse.lab.karpov.courses',
-                password='656e2b0c9c',
-                user='student-rw',
-                database='test')
-            q = '''CREATE TABLE IF NOT EXISTS test.bogoliubova_test
-                (       
-                    event_date Date,
-                    gender UInt64,
-                    age String,
-                    os String,
-                    views UInt64,
-                    likes UInt64,
-                    messages_received UInt64,
-                    messages_sent UInt64,
-                    users_received UInt64,
-                    users_sent UInt64 
-                ) ENGINE = Log()
-                '''
-            client.execute(q)
-
+            }
+        q = '''CREATE TABLE IF NOT EXISTS test.bogoliubova_test
+            (       
+                event_date Date,
+                gender UInt64,
+                age String,
+                os String,
+                views UInt64,
+                likes UInt64,
+                messages_received UInt64,
+                messages_sent UInt64,
+                users_received UInt64,
+                users_sent UInt64 
+            ) ENGINE = Log()
+            '''
+        pandahouse.execute(connection=connection, query=q)
         if pandahouse.read_clickhouse("SELECT * FROM test.bogoliubova_test WHERE event_date = today()-1 LIMIT 10", connection=connection)['event_date'].count() == 0:
             pandahouse.to_clickhouse(df=df_final, table='bogoliubova_test', index=False, connection=connection)
 
