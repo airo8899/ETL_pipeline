@@ -9,6 +9,26 @@ import pandahouse as ph
 from airflow.decorators import dag, task
 from airflow.operators.python import get_current_context
 
+class Getch:
+    def __init__(self, query, db='simulator_20220320'):
+        self.connection = {
+            'host': 'https://clickhouse.lab.karpov.courses',
+            'password': 'dpo_python_2020',
+            'user': 'student',
+            'database': db,
+        }
+        self.query = query
+        self.getchdf
+
+    @property
+    def getchdf(self):
+        try:
+            self.df = ph.read_clickhouse(self.query, connection=self.connection)
+
+        except Exception as err:
+            print("\033[31m {}".format(err))
+            exit(0)
+
 
 
 
@@ -23,12 +43,6 @@ default_args = {
 
 connection = {
     'host': 'https://clickhouse.lab.karpov.courses',
-    'password': 'dpo_python_2020',
-    'user': 'student',
-    'database': 'simulator_20220320'}
-
-connection_new = {
-    'host': 'https://clickhouse.lab.karpov.courses',
     'password': '656e2b0c9c',
     'user': 'student-rw',
     'database': 'test'}
@@ -42,18 +56,18 @@ def etl_oleg():
     #загрузка данных
     @task
     def extract_feed():
-        query_feed = """SELECT DISTINCT user_id AS user,toDate(time) AS event_date,gender,age,os,countIf(action='like') AS likes,countIf(action='view') AS views
+        query_feed = Getch ("""SELECT DISTINCT user_id AS user,toDate(time) AS event_date,gender,age,os,countIf(action='like') AS likes,countIf(action='view') AS views
         FROM simulator_20220320.feed_actions
         WHERE event_date = today() - 1
         GROUP BY user,event_date,gender,age,os
-        """
-        feed_data = ph.read_clickhouse(query=query_msg, connection = connection)
-        return(feed_data)
+        """).df
+        
+        return(query_feed)
     #загрузка данных
     
     @task
     def extract_message():   
-        query_message = """
+        query_message = Getch ("""
         select user,event_date,messages_received,messages_sent,users_received,users_sent
         from
         
@@ -72,14 +86,12 @@ def etl_oleg():
         ) t2
 
         on t1.user = t2.user and t1.event_date = t2.event_date
-       """
-        msg_data = ph.read_clickhouse(query=query_msg, connection = connection)
-        return(msg_data)
-    
-    
+       """).df
+        return(query_message)
+        
     @task
-    def feed_message(feed_data,msg_data): 
-        msg_and_feed = feed_data.merge(msg_data, on=['event_date', 'user'] , how='outer')
+    def merge_df(query_feed,query_message): 
+        msg_and_feed = query_feed.merge(query_message, on=['event_date', 'user'] , how='outer')
         return (msg_and_feed)
     
     @task
@@ -180,7 +192,7 @@ def etl_oleg():
 
     feed = extract_feed()
     msg = extract_message()
-    feed_msg = feed_message(feed, msg)
+    feed_msg = merge_df(feed, msg)
     gender = transform_gender(feed_msg)
     age = transform_age(feed_msg)
     os = transform_os(feed_msg)
