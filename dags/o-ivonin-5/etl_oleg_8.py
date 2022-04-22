@@ -88,9 +88,9 @@ def etl_oleg():
         on t1.user = t2.user and t1.event_date = t2.event_date
        """).df
         return(query_message)
-        
+    
     @task
-    def merge_df(query_message,query_feed): 
+    def feed_message(query_message,query_feed): 
         msg_and_feed = query_feed.merge(query_message, on=['event_date', 'user'] , how='outer')
         return (msg_and_feed)
     
@@ -192,7 +192,7 @@ def etl_oleg():
 
     feed = extract_feed()
     msg = extract_message()
-    feed_msg = merge_df(feed, msg)
+    feed_msg = feed_message(feed, msg)
     gender = transform_gender(feed_msg)
     age = transform_age(feed_msg)
     os = transform_os(feed_msg)
