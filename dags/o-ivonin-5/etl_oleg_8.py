@@ -89,8 +89,9 @@ def etl_oleg():
        """).df
         return(query_message)
     
+    
     @task
-    def feed_message(query_message,query_feed): 
+    def feed_message(query_feed,query_message): 
         msg_and_feed = query_feed.merge(query_message, on=['event_date', 'user'] , how='outer')
         return (msg_and_feed)
     
