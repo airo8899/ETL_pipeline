@@ -49,7 +49,6 @@ connection = {
 
 # Интервал запуска DAG
 schedule_interval = '0 23 * * *'
-
 @dag(default_args=default_args, schedule_interval=schedule_interval, catchup=False)
 def etl_oleg():
     
@@ -90,7 +89,7 @@ def etl_oleg():
         return(query_message)
         
     @task
-    def merge_df(query_feed,query_message): 
+    def msg_feed(query_feed,query_message): 
         msg_and_feed = query_feed.merge(query_message, on=['event_date', 'user'] , how='outer')
         return (msg_and_feed)
     
@@ -113,12 +112,12 @@ def etl_oleg():
                                     'users_sent':'sum'}).reset_index().copy()
 
         df_gender['metric'] = 'gender'
-        df_gender.rename(columns={'gender':'value'},inplace=True)
+        df_gender.rename(columns={'gender':'metric_value'},inplace=True)
         return df_gender
     
     @task
     #age table
-    def transform_age(msg_and_feed): 
+    def age(msg_and_feed): 
         
         # преобразуем возраст в категории
         def age_category(x):
@@ -142,11 +141,11 @@ def etl_oleg():
                                     'users_sent':'sum'}).reset_index().copy()
 
         df_age['metric'] = 'age'
-        df_age.rename(columns={'age':'value'},inplace=True)
+        df_age.rename(columns={'age':'metric_value'},inplace=True)
         return df_age
     @task
     #os table
-    def transform_os(msg_and_feed):
+    def os(msg_and_feed):
         df_os = msg_and_feed.groupby('os').agg({'event_date':'min', \
                                     'likes':'sum', \
                                     'views': 'sum', \
@@ -155,14 +154,14 @@ def etl_oleg():
                                     'messages_sent':'sum', \
                                     'users_sent':'sum'}).reset_index().copy()
         df_os['metric'] = 'os'
-        df_os.rename(columns={'os':'value'},inplace=True)
+        df_os.rename(columns={'os':'metric_value'},inplace=True)
         return df_os
     @task
-    def df_concat(df_gender, df_age, df_os):
+    def result_table(df_gender, df_age, df_os):
         concat_table = pd.concat([df_gender, df_age, df_os])
         new_cols = ['event_date',
                     'metric',
-                    'value',
+                    'metric_value',
                     'views',
                     'likes',
                     'messages_received',
@@ -172,10 +171,9 @@ def etl_oleg():
 
         final_table = concat_table.loc[:, new_cols]
         final_table = final_table.reset_index().drop('index', axis =1)
-        final_table['event_date'] = final_table['event_date'].apply(lambda x: datetime.isoformat(x))
         final_table = final_table.astype({
                         'metric':'str',
-                        'value':'str',  
+                        'metric_value':'str', \
                         'views':'int', \
                         'likes':'int', \
                         'messages_received':'int', \
@@ -186,17 +184,18 @@ def etl_oleg():
         return final_table
     @task
     def load(final_table):
-        ph.to_clickhouse(df=final_table, table='Metrics_Oleg', index=False, \
+        ph.to_clickhouse(df=final_table, table='Metrics_awdas', index=False, \
                          connection = connection)
 
 
     feed = extract_feed()
     msg = extract_message()
-    feed_msg = merge_df(feed, msg)
+    feed_msg = msg_feed(feed, msg)
     gender = transform_gender(feed_msg)
-    age = transform_age(feed_msg)
-    os = transform_os(feed_msg)
-    final_table = df_concat(gender, age, os)
+    age = age(feed_msg)
+    os = os(feed_msg)
+    final_table = result_table(gender, age, os)
     load(final_table)
 
 etl_oleg = etl_oleg()
+
