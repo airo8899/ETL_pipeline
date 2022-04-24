@@ -167,7 +167,7 @@ def avs_dag():
         print('started')
     
     @task
-    def check_or_create_table_1():
+    def check_or_create_table_v1():
         if ph.read_clickhouse(query='exists test.avs_v1', connection=connection_to).iloc[0, 0] == 0:
             ph.execute(connection=connection_to, query=create_table_v1)
             print('avs_v1 was created')
@@ -175,7 +175,7 @@ def avs_dag():
             print('avs_v1 already exists')
     
     @task
-    def check_or_create_table_2():
+    def check_or_create_table_v2():
         if ph.read_clickhouse(query='exists test.avs_v2', connection=connection_to).iloc[0, 0] == 0:
             ph.execute(connection=connection_to, query=create_table_v2)
             print('avs_v2 was created')
