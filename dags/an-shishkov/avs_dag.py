@@ -226,12 +226,12 @@ def avs_dag():
     @task
     def upload_table_v1(df):
         print(df.to_csv(index=False, sep='\t'))
-        ph.to_clickhouse(df, table='avs_v1', connection=upload_connection, index=False)
+        ph.to_clickhouse(df, table='avs_v1', connection=connection_to, index=False)
 
     @task
     def upload_table_v2(df):
         print(df.to_csv(index=False, sep='\t'))
-        ph.to_clickhouse(df, table='avs_v2', connection=upload_connection, index=False)
+        ph.to_clickhouse(df, table='avs_v2', connection=connection_to, index=False)
     
     hello()
     check_or_create_table_v1()
