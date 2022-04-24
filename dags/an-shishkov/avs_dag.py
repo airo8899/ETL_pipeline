@@ -147,10 +147,13 @@ def gender_str(x):
     else:
         return 'female'
 
+# список переменных
+vars = ['views', 'likes', 'messages_sent', 'users_sent', 'messages_received', 'users_received']
+
 # группировка по метрикам
 def calc_aggs_by_metric(tbl, metric):
     tbl['metric'] = metric
-    aggs = tbl.groupby(by=['event_date', 'metric', metric])[['views', 'likes', 'messages_sent', 'users_sent', 'messages_received', 'users_received']].sum().reset_index()
+    aggs = tbl.groupby(by=['event_date', 'metric', metric])[vars].sum().reset_index()
     aggs.rename(columns={metric:'metric_value'},inplace=True)
     return aggs
 
@@ -217,11 +220,15 @@ def avs_dag():
     
     @task
     def concat_to_table_v2(*args):
-        return pd.concat(args).reset_index(drop=True)
+        table_v2 = pd.concat(args).reset_index(drop=True)
+        table_v2[vars] = table_v2[vars].astype('int32')
+        return table_v2
     
     @task
     def transform_to_table_v1(df):
-        return df.groupby(['event_date', 'gender', 'age', 'os'])[['views', 'likes', 'messages_sent', 'users_sent', 'messages_received', 'users_received']].sum().reset_index()
+        table_v1 = df.groupby(['event_date', 'gender', 'age', 'os'])[vars].sum().reset_index()
+        table_v1[vars] = table_v1[vars].astype('int32')
+        return table_v1
     
     @task
     def upload_table_v1(df):
@@ -252,4 +259,3 @@ def avs_dag():
     upload_table_v2(aggs_v2)
     
 avs_dag = avs_dag()
-        
