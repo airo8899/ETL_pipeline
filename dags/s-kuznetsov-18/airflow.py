@@ -158,7 +158,7 @@ def dag_kuznetsov():
 
     @task
     def load(full_df):
-        pandahouse.to_clickhouse(df=full_df, table='SKuznetsov', index=False, connection=connection_test)
+        pandahouse.to_clickhouse(df=full_df, table='skuznetsov', index=False, connection=connection_test)
 
     feed = counts_feed_metrics()
     msg = counts_messenger_metrics()
