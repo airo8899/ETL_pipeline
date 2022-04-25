@@ -4,7 +4,6 @@ import pandas as pd
 import pandahouse
 
 from airflow.decorators import dag, task
-from airflow.operators.python import get_current_context
 
 default_args = {
     'owner': 's-kuznetsov-18',
@@ -24,6 +23,12 @@ connection = {
     'database': 'simulator_20220320'
 }
 
+connection_test = {
+    'host': 'https://clickhouse.lab.karpov.courses',
+    'password': '656e2b0c9c',
+    'user': 'student-rw',
+    'database': 'test'
+}
 
 @dag(default_args=default_args, schedule_interval=schedule_interval, catchup=False)
 def dag_kuznetsov():
@@ -153,18 +158,6 @@ def dag_kuznetsov():
     @task
     def load(full_df):
         pandahouse.to_clickhouse(df=full_df, table='skuznetsov', index=False, connection=connection_test)
-        context = get_current_context()
-        ds = context['ds']
-        print(f"""Metrics for {ds}""")
-        print(full_df.to_csv(index=False, sep='\t'))
-        connection_test = {
-            'host': 'https://clickhouse.lab.karpov.courses',
-            'password': '656e2b0c9c',
-            'user': 'student-rw',
-            'database': 'test'
-        }
-
-        pandahouse.to_clickhouse(full_df, 'okruzhnov_test', index=False, connection=connection_test)
 
     feed = counts_feed_metrics()
     msg = counts_messenger_metrics()
