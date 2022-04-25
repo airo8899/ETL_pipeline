@@ -130,22 +130,22 @@ def dag_kuznetsov():
     @task
     def df_concat(df_gender, df_age, df_os):
         concat_table = pd.concat([df_gender, df_age, df_os])
-        new_cols = ['event_date',
-                    'metric',
-                    'metric_value',
-                    'views',
-                    'likes',
-                    'messages_received',
-                    'messages_sent',
-                    'users_received',
+        new_cols = ['event_date', \
+                    'metric', \
+                    'metric_value', \
+                    'views', \
+                    'likes', \
+                    'messages_received', \
+                    'messages_sent', \
+                    'users_received', \
                     'users_sent']
 
         full_df = concat_table.loc[:, new_cols]
         full_df = full_df.reset_index().drop('index', axis=1)
         full_df['event_date'] = full_df['event_date'].apply(lambda x: datetime.isoformat(x))
         full_df = full_df.astype({
-            'metric': 'str',
-            'metric_value': 'str',
+            'metric': 'str', \
+            'metric_value': 'str', \
             'views': 'int', \
             'likes': 'int', \
             'messages_received': 'int', \
@@ -157,8 +157,7 @@ def dag_kuznetsov():
 
     @task
     def load(full_df):
-        pandahouse.to_clickhouse(df=full_df, table='SKuznetsov', index=False, \
-                                 connection=connection_test)
+        pandahouse.to_clickhouse(df=full_df, table='SKuznetsov', index=False, connection=connection_test)
 
     feed = counts_feed_metrics()
     msg = counts_messenger_metrics()
