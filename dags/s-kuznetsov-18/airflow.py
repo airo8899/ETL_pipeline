@@ -82,7 +82,8 @@ def dag_kuznetsov():
 
     @task
     def merge_df(df_message, df_feed):
-        full_df = df_message.merge(df_feed, on=['event_date', 'user_id'], how='outer')
+        full_df = pd.merge(df_message, df_feed, on=['user_id', 'event_date'], \
+                 how='outer')
         return full_df
 
     @task
@@ -170,3 +171,4 @@ def dag_kuznetsov():
 
 
 dag_kuznetsov = dag_kuznetsov()
+
