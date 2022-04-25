@@ -95,6 +95,8 @@ def dag_kuznetsov():
                   'users_received': 'sum', \
                   'likes': 'sum', \
                   'views': 'sum'})
+        df_gender['metric'] = 'gender'
+        df_gender.rename(columns={'gender': 'metric_value'}, inplace=True)
         return df_gender
 
     @task
@@ -107,6 +109,8 @@ def dag_kuznetsov():
                   'users_received': 'sum', \
                   'likes': 'sum', \
                   'views': 'sum'})
+        df_os['metric'] = 'os'
+        df_os.rename(columns={'os': 'metric_value'}, inplace=True)
         return df_os
 
     @task
@@ -119,6 +123,8 @@ def dag_kuznetsov():
                   'users_received': 'sum', \
                   'likes': 'sum', \
                   'views': 'sum'})
+        df_age['metric'] = 'age'
+        df_age.rename(columns={'age': 'metric_value'}, inplace=True)
         return df_age
 
     @task
