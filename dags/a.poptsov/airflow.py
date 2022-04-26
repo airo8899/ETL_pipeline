@@ -2,15 +2,32 @@ from datetime import datetime, timedelta
 import pandas as pd
 from io import StringIO
 import requests
+import pandahouse as ph
 
 from airflow.decorators import dag, task
 from airflow.operators.python import get_current_context
 
-# Функция для CH
-def ch_get_df(query='Select 1', host='https://clickhouse.lab.karpov.courses', user='student-rw', password='656e2b0c9c'):
-    r = requests.post(host, data=query.encode("utf-8"), auth=(user, password), verify=False)
+
+connection_write = {'host': 'https://clickhouse.lab.karpov.courses',
+                      'database':'test',
+                      'user':'student-rw', 
+                      'password':'656e2b0c9c'
+                     }
+
+def ch_get_df(query='Select 1', connection = connection_write):
+    r = requests.post(host, data=query.encode("utf-8"), auth=(connection['user'], connection['password']), verify=False)
     result = pd.read_csv(StringIO(r.text), sep='\t')
     return result
+
+
+connection_read = {'host': 'http://clickhouse.beslan.pro:8080',
+                      'database':'simulator_20220220',
+                      'user':'student', 
+                      'password':'dpo_python_2020'
+                     }
+def ch_get_df2(query , connection):
+    df = ph.read_clickhouse(query = query, connection=connection)
+    return df
 
 # Дефолтные параметры, которые прокидываются в таски
 default_args = {
@@ -42,10 +59,9 @@ def dag_poptsov():
             group by
                 event_date,
                 country,
-                source
-            format TSVWithNames"""       
+                source"""       
         
-        df_cube = ch_get_df(query=query)
+        df_cube = ch_get_df2(query=query, connection = connection_read)
         
         return df_cube
 
