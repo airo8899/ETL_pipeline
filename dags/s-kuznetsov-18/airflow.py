@@ -81,8 +81,7 @@ def dag_kuznetsov():
 
     @task
     def merge_df(df_message, df_feed):
-        full_df = pd.merge(df_message, df_feed, on=['user_id', 'event_date'], \
-                 how='outer')
+        full_df = pd.merge(df_message, df_feed, on=['user_id', 'event_date'], how='outer')
         return full_df
 
     @task
@@ -94,7 +93,8 @@ def dag_kuznetsov():
                   'messages_received': 'sum', \
                   'users_received': 'sum', \
                   'likes': 'sum', \
-                  'views': 'sum'})
+                  'views': 'sum'}) \
+            .reset_index().copy()
         df_gender['metric'] = 'gender'
         df_gender.rename(columns={'gender': 'metric_value'}, inplace=True)
         return df_gender
@@ -108,7 +108,8 @@ def dag_kuznetsov():
                   'messages_received': 'sum', \
                   'users_received': 'sum', \
                   'likes': 'sum', \
-                  'views': 'sum'})
+                  'views': 'sum'}) \
+            .reset_index().copy()
         df_os['metric'] = 'os'
         df_os.rename(columns={'os': 'metric_value'}, inplace=True)
         return df_os
@@ -122,7 +123,8 @@ def dag_kuznetsov():
                   'messages_received': 'sum', \
                   'users_received': 'sum', \
                   'likes': 'sum', \
-                  'views': 'sum'})
+                  'views': 'sum'}) \
+            .reset_index().copy()
         df_age['metric'] = 'age'
         df_age.rename(columns={'age': 'metric_value'}, inplace=True)
         return df_age
@@ -157,17 +159,16 @@ def dag_kuznetsov():
 
     @task
     def load(full_df):
-        pandahouse.to_clickhouse(df=full_df, table='skuznetsov', index=False, connection=connection_test)
+        pandahouse.to_clickhouse(df=full_df, table='SKuznetsov', index=False, connection=connection_test)
 
-    feed = counts_feed_metrics()
-    msg = counts_messenger_metrics()
-    feed_msg = merge_df(feed, msg)
-    gender = transfrom_gender(feed_msg)
-    age = transfrom_age(feed_msg)
-    os = transfrom_os(feed_msg)
-    full_df = df_concat(gender, age, os)
+    df_feed = counts_feed_metrics()
+    df_message = counts_messenger_metrics()
+    full_df = merge_df(df_feed, df_message)
+    df_gender = transfrom_gender(full_df)
+    df_age = transfrom_age(full_df)
+    df_os = transfrom_os(full_df)
+    full_df = df_concat(df_gender, df_age, df_os)
     load(full_df)
-
 
 dag_kuznetsov = dag_kuznetsov()
 
