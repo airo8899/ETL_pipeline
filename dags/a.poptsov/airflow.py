@@ -39,7 +39,7 @@ default_args = {
 }
 
 # Интервал запуска DAG
-schedule_interval = '0 23 * * *'
+schedule_interval = '0 5 * * *'
 
 @dag(default_args=default_args, schedule_interval=schedule_interval, catchup=False)
 def dag_poptsov():
@@ -65,4 +65,5 @@ def dag_poptsov():
         
         return df_cube
 
+    
 dag_sim_example = dag_poptsov()
