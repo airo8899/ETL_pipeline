@@ -14,7 +14,7 @@ connection_write = {'host': 'https://clickhouse.lab.karpov.courses',
                       'password':'656e2b0c9c'
                      }
 
-def ch_get_df(query='Select 1', connection = connection_write):
+def ch_get_df(query='Select *', connection = connection_write):
     r = requests.post(host, data=query.encode("utf-8"), auth=(connection['user'], connection['password']), verify=False)
     result = pd.read_csv(StringIO(r.text), sep='\t')
     return result
