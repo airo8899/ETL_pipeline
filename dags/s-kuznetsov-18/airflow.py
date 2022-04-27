@@ -142,10 +142,10 @@ def dag_kuznetsov():
                     'users_received', \
                     'users_sent']
 
-        full_df = concat_table.loc[:, new_cols]
-        full_df = full_df.reset_index().drop('index', axis=1)
-        full_df['event_date'] = full_df['event_date'].apply(lambda x: datetime.isoformat(x))
-        full_df = full_df.astype({
+        final_df = concat_table.loc[:, new_cols]
+        final_df = final_df.reset_index().drop('index', axis=1)
+        final_df['event_date'] = final_df['event_date'].apply(lambda x: datetime.isoformat(x))
+        final_df = final_df.astype({
             'metric': 'str', \
             'metric_value': 'str', \
             'views': 'int', \
@@ -155,11 +155,11 @@ def dag_kuznetsov():
             'users_received': 'int', \
             'users_sent': 'int'})
 
-        return full_df
+        return final_df
 
     @task
-    def load(full_df):
-        pandahouse.to_clickhouse(df=full_df, table='SKuznetsov', index=False, connection=connection_test)
+    def load(final_df):
+        pandahouse.to_clickhouse(df=final_df, table='SKuznetsov', index=False, connection=connection_test)
 
     df_feed = counts_feed_metrics()
     df_message = counts_messenger_metrics()
@@ -167,8 +167,9 @@ def dag_kuznetsov():
     df_gender = transfrom_gender(full_df)
     df_age = transfrom_age(full_df)
     df_os = transfrom_os(full_df)
-    full_df = df_concat(df_gender, df_age, df_os)
-    load(full_df)
+    final_df = df_concat(df_gender, df_age, df_os)
+    load(final_df)
+
 
 dag_kuznetsov = dag_kuznetsov()
 
