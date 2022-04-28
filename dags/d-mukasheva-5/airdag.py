@@ -117,7 +117,7 @@ def dag_dina_m():
     @task
     def load(df_fin):
         q = '''
-                CREATE TABLE IF NOT EXISTS test.diykov_v2
+                CREATE TABLE IF NOT EXISTS test.d.mukasheva
                 (   event_date Date,
                     gender String,
                     age String,
