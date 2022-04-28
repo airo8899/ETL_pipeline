@@ -129,6 +129,11 @@ def dag_poptsov():
         print(df_gender.head())
     
         df_result = pd.concat([df_os, df_age, df_gender], axis = 0)
+        df_result = df_result[['event_date','metric','metric_values','likes','views','send_messages','to_users','receive_messages','from_users']].reset_index(drop = True)
+        df_result['send_messages'] = df_result['send_messages'].astype('uint64')
+        df_result['to_users'] = df_result['to_users'].astype('uint64')
+        df_result['receive_messages'] = df_result['receive_messages'].astype('uint64')
+        df_result['from_users'] = df_result['from_users'].astype('uint64')        
         
         q = '''CREATE TABLE IF NOT EXISTS test.apoptsov
                 (   event_date Date,
