@@ -103,7 +103,6 @@ def dag_poptsov():
         df = df.drop('reciever_id', axis = 1)
         return df
     
-    
     @task()
     def merge(df_feed_actions, df_message_actions):
         df = df_feed_actions.merge(df_message_actions, on = ['event_date', 'user_id', 'gender', 'age', 'os'], how = 'left').fillna(0)
@@ -131,8 +130,7 @@ def dag_poptsov():
     
         df_result = pd.concat([df_os, df_age, df_gender], axis = 0)
         
-        q = '''
-                CREATE TABLE IF NOT EXISTS test.apoptsov
+        q = '''CREATE TABLE IF NOT EXISTS test.apoptsov
                 (   event_date Date,
                     metric String,
                     metric_values String,
@@ -141,7 +139,7 @@ def dag_poptsov():
                     send_messages UInt64,
                     to_users UInt64,
                     receive_messages UInt64,
-                    from_users UInt64,
+                    from_users UInt64
                 ) ENGINE = Log()'''
         ph.execute(connection=connection_upload, query=q)        
     
@@ -157,5 +155,4 @@ def dag_poptsov():
     
     load(df_os, df_age, df_gender)
 
-# New DAG name     
 poptsov_dag = dag_poptsov()
