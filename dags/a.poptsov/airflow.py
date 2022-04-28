@@ -143,7 +143,7 @@ def dag_poptsov():
                     receive_messages UInt64,
                     from_users UInt64,
                 ) ENGINE = Log()'''
-        pd.execute(connection=connection_upload, query=q)        
+        ph.execute(connection=connection_upload, query=q)        
     
         ph.to_clickhouse(df = df_result, table='apoptsov', index=False, connection = connection_upload)
 
