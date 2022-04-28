@@ -159,7 +159,7 @@ def dag_kuznetsov():
 
     @task
     def load(final_df):
-     q = '''
+        q = '''
                 CREATE TABLE IF NOT EXISTS test.SKuznetsov
                 (   event_date Date,
                     metric String,
