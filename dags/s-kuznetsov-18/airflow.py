@@ -144,6 +144,7 @@ def dag_kuznetsov():
 
         final_df = concat_table.loc[:, new_cols]
         final_df = final_df.reset_index().drop('index', axis=1)
+        final_df['event_date'] = final_df['event_date'].apply(lambda x: datetime.isoformat(x))
         final_df = final_df.astype({
             'metric': 'str', \
             'metric_value': 'str', \
@@ -160,7 +161,7 @@ def dag_kuznetsov():
     def load(final_df):
      q = '''
                 CREATE TABLE IF NOT EXISTS test.SKuznetsov
-                (   event_date Date,
+                (   event_date Datetime,
                     metric String,
                     metric_value String,
                     likes UInt64,
