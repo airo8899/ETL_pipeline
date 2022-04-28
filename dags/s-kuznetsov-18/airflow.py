@@ -46,7 +46,7 @@ def dag_kuznetsov():
                    FROM simulator_20220320.feed_actions
                    WHERE event_date = yesterday()
                    GROUP BY event_date, user_id, gender, age, os
-'''
+                   '''
         df_feed = pandahouse.read_clickhouse(query, connection=connection)
         return df_feed
 
@@ -75,7 +75,7 @@ def dag_kuznetsov():
                          WHERE event_date = yesterday()
                          GROUP BY reciever_id, event_date) t2
                          ON t1.user_id = t2.reciever_id
-'''
+                        '''
         df_message = pandahouse.read_clickhouse(query, connection=connection)
         return df_message
 
@@ -159,7 +159,7 @@ def dag_kuznetsov():
 
     @task
     def load(final_df):
-     q = '''
+        q = '''
                 CREATE TABLE IF NOT EXISTS test.SKuznetsov
                 (   event_date DateTime,
                     metric String,
@@ -172,18 +172,18 @@ def dag_kuznetsov():
                     users_received UInt64
                 ) ENGINE = Log()'''
 
-     pandahouse.execute(connection=connection_test, query=q)
+        pandahouse.execute(connection=connection_test, query=q)
 
-     pandahouse.to_clickhouse(df=final_df, table='SKuznetsov', connection=connection_test, index=False)
+        pandahouse.to_clickhouse(df=final_df, table='SKuznetsov', connection=connection_test, index=False)
 
-     df_feed = counts_feed_metrics()
-     df_message = counts_messenger_metrics()
-     full_df = merge_df(df_feed, df_message)
-     df_gender = transfrom_gender(full_df)
-     df_age = transfrom_age(full_df)
-     df_os = transfrom_os(full_df)
-     final_df = df_concat(df_gender, df_age, df_os)
-     load(final_df)
+    df_feed = counts_feed_metrics()
+    df_message = counts_messenger_metrics()
+    full_df = merge_df(df_feed, df_message)
+    df_gender = transfrom_gender(full_df)
+    df_age = transfrom_age(full_df)
+    df_os = transfrom_os(full_df)
+    final_df = df_concat(df_gender, df_age, df_os)
+    load(final_df)
 
 
 dag_kuznetsov = dag_kuznetsov()
