@@ -64,7 +64,8 @@ def dag_poptsov():
         df_cube = ch_get_df2(query=query, connection = connection_read)
         
         return df_cube
-
+    
+    df = extract()
 
 # New DAG name     
 poptsov_dag = dag_poptsov()
