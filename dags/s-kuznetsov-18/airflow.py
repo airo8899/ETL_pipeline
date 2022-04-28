@@ -159,21 +159,6 @@ def dag_kuznetsov():
 
     @task
     def load(final_df):
-        q = '''
-                CREATE TABLE IF NOT EXISTS test.SKuznetsov
-                (   event_date DateTime,
-                    metric String,
-                    metric_value String,
-                    likes UInt64,
-                    views UInt64,
-                    messages_sent UInt64,
-                    users_sent UInt64,
-                    messages_received UInt64,
-                    users_received UInt64
-                ) ENGINE = Log()'''
-
-        pandahouse.execute(connection=connection_test, query=q)
-
         pandahouse.to_clickhouse(df=final_df, table='SKuznetsov', connection=connection_test, index=False)
 
     df_feed = counts_feed_metrics()
