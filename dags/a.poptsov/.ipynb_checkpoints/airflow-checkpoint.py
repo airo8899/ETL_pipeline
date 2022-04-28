@@ -118,7 +118,7 @@ def dag_poptsov():
         return df    
     
     @task()
-    def upload_result(df_os, df_age, df_gender):
+    def load(df_os, df_age, df_gender):
         context = get_current_context()
         ds = context['ds']
         print(f'Current date {ds}')
@@ -141,7 +141,7 @@ def dag_poptsov():
     df_age = calc_group_metric(df, ['age'])
     df_gender = calc_group_metric(df, ['gender'])
     
-    upload_result(df_os, df_age, df_gender)
+    load(df_os, df_age, df_gender)
 
 # New DAG name     
 poptsov_dag = dag_poptsov()
