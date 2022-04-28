@@ -10,10 +10,9 @@ from airflow.operators.python import get_current_context
 
 
 connection_upload = {'host': 'https://clickhouse.lab.karpov.courses',
-                      'database':'test',
-                      'user':'student-rw', 
-                      'password':'656e2b0c9c'
-                     }
+        'password': '656e2b0c9c',
+        'user': 'student-rw',
+        'database': 'test'}                     }
 
 def ch_get_df(query='Select * ', connection = connection_upload):
     r = requests.post(host, data=query.encode("utf-8"), auth=(connection['user'], connection['password']), verify=False)
@@ -21,7 +20,7 @@ def ch_get_df(query='Select * ', connection = connection_upload):
     return result
 
 
-connection_read = {'host': 'http://clickhouse.beslan.pro:8080',
+connection_read = {'host': 'https://clickhouse.lab.karpov.courses',
                       'database':'simulator_20220220',
                       'user':'student', 
                       'password':'dpo_python_2020'
