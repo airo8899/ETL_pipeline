@@ -131,8 +131,7 @@ def dag_poptsov():
     
         df_result = pd.concat([df_os, df_age, df_gender], axis = 0)
         
-        q = '''
-                CREATE TABLE IF NOT EXISTS test.apoptsov
+        q = '''CREATE TABLE IF NOT EXISTS test.apoptsov
                 (   event_date Date,
                     metric String,
                     metric_values String,
@@ -157,5 +156,4 @@ def dag_poptsov():
     
     load(df_os, df_age, df_gender)
 
-# New DAG name     
 poptsov_dag = dag_poptsov()
