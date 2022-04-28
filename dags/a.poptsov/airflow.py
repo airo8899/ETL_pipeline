@@ -141,7 +141,7 @@ def dag_poptsov():
                     send_messages UInt64,
                     to_users UInt64,
                     receive_messages UInt64,
-                    from_users UInt64,
+                    from_users UInt64
                 ) ENGINE = Log()'''
         ph.execute(connection=connection_upload, query=q)        
     
