@@ -66,4 +66,4 @@ def dag_poptsov():
         return df_cube
 
     
-dag_sim_example = dag_poptsov()
+poptsov_dag = dag_poptsov()
