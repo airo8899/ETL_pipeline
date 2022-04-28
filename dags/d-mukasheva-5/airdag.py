@@ -26,7 +26,7 @@ def querry(q):
 
 # Дефолтные параметры, которые прокидываются в таски
 default_args = {
-    'owner': 'd.mukasheva',
+    'owner': 'd-mukasheva-5',
     'depends_on_past': False,
     'retries': 2,
     'retry_delay': timedelta(minutes=5),
@@ -37,7 +37,7 @@ default_args = {
 schedule_interval = '0 23 * * *'
 
 @dag(default_args=default_args, schedule_interval=schedule_interval, catchup=False)
-def dag_dina():
+def dag_dina_m():
 
     @task()
     def feed():
@@ -140,4 +140,4 @@ def dag_dina():
     df_fin=fintable(df)
     load(df_fin)
 
-dag_dina = dag_dina()
+dag_dina_m = dag_dina_m()
