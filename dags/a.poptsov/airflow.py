@@ -130,6 +130,20 @@ def dag_poptsov():
         print(df_gender.head())
     
         df_result = pd.concat([df_os, df_age, df_gender], axis = 0)
+        
+        q = '''
+                CREATE TABLE IF NOT EXISTS test.diykov_v1
+                (   event_date Date,
+                    metric String,
+                    metric_values String,
+                    likes UInt64,
+                    views UInt64,
+                    send_messages UInt64,
+                    to_users UInt64,
+                    receive_messages UInt64,
+                    from_users UInt64,
+                ) ENGINE = Log()'''
+        pd.execute(connection=connection_upload, query=q)        
     
         ph.to_clickhouse(df = df_result, table='apoptsov', index=False, connection = connection_upload)
 
