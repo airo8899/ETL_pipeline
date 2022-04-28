@@ -117,7 +117,7 @@ def dag_dina_m():
     @task
     def load(df_fin):
         q = '''
-                CREATE TABLE IF NOT EXISTS test.d.mukasheva
+                CREATE TABLE IF NOT EXISTS test.d_mukasheva
                 (   event_date Date,
                     gender String,
                     age String,
@@ -131,7 +131,7 @@ def dag_dina_m():
                 ) ENGINE = Log()'''
 
         pandahouse.execute(connection=connection2, query=q)
-        pandahouse.to_clickhouse(df=df_fin, table='d.mukasheva', index=False, \
+        pandahouse.to_clickhouse(df=df_fin, table='d_mukasheva', index=False, \
                          connection = connection2)
        
     df_feed = feed()
