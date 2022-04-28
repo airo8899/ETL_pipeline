@@ -132,7 +132,7 @@ def dag_poptsov():
         df_result = pd.concat([df_os, df_age, df_gender], axis = 0)
         
         q = '''
-                CREATE TABLE IF NOT EXISTS test.diykov_v1
+                CREATE TABLE IF NOT EXISTS test.apoptsov
                 (   event_date Date,
                     metric String,
                     metric_values String,
