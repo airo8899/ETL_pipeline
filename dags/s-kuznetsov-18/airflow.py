@@ -35,7 +35,7 @@ def dag_kuznetsov():
     @task
     def counts_feed_metrics():
         query = '''SELECT toDate(time) as event_date,
-                          gender,
+                          If(gender == 0, 'female', 'male') as gender,
                           multiIf(age <= 17, 'до 18', age > 17
                            and age <= 30, '18-30', age > 30
                            and age <= 50, '31-50', '50+') as age,
@@ -172,4 +172,3 @@ def dag_kuznetsov():
 
 
 dag_kuznetsov = dag_kuznetsov()
-
