@@ -103,7 +103,6 @@ def dag_poptsov():
         df = df.drop('reciever_id', axis = 1)
         return df
     
-    
     @task()
     def merge(df_feed_actions, df_message_actions):
         df = df_feed_actions.merge(df_message_actions, on = ['event_date', 'user_id', 'gender', 'age', 'os'], how = 'left').fillna(0)
