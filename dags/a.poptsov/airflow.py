@@ -66,8 +66,7 @@ def dag_poptsov():
             age,
             os"""       
         df = ch_get_df2(query=query, connection = connection_read)
-    
-    return df    
+        return df    
 
     @task()
     def extract_message_actions():
@@ -118,6 +117,7 @@ def dag_poptsov():
         df['metric'] = group_column[0]
         df = df.rename({group_column[0]:'metric_values'}, axis = 1)
         return df    
+    
     @task()
     def upload_result(df_os, df_age, df_gender):
         context = get_current_context()
