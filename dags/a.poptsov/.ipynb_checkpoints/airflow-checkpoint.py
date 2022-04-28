@@ -131,7 +131,7 @@ def dag_poptsov():
     
         df_result = pd.concat([df_os, df_age, df_gender], axis = 0)
     
-        ph.to_clickhouse(df = df_result, table='poptsov_airflow_result', index=False, connection = connection_upload)
+        ph.to_clickhouse(df = df_result, table='apoptsov', index=False, connection = connection_upload)
 
     df_feed_actions = extract_feed_actions()
     df_message_actions = extract_message_actions()
